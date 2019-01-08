@@ -1,4 +1,4 @@
-package robot;
+package bc19;
 
 public class BCAbstractRobot {
 	Object gameState;
