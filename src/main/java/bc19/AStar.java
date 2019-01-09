@@ -19,7 +19,6 @@ public abstract class AStar {
         lastCost = 0.0;
     }
 
-
     protected abstract boolean isGoal(Node node);
 
     protected abstract Double g(Node from, Node to);

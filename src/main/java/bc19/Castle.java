@@ -64,7 +64,7 @@ public class Castle extends RobotType{
     public Action turn() {
 
         if(!initialized){
-            initialize();
+            //initialize();
             initialized = true;
         }
 
