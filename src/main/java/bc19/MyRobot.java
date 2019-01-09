@@ -7,6 +7,7 @@ public class MyRobot extends BCAbstractRobot {
     public Action turn() {
         int unit_type = me.unit;
         log("INSIDE TURN " +  me.turn);
+        log("INSIDE TURN " +  getPassableMap());
         if (robotType == null){
             switch (unit_type) {
                 case Constants.CASTLE_UNIT:
