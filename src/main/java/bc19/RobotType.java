@@ -1,8 +1,12 @@
 package bc19;
 
-public abstract class RobotType extends BuildType {
+public abstract class RobotType {
 
-    public RobotType() {
-        super();
+    protected BCAbstractRobot robot;
+
+    public RobotType(BCAbstractRobot robot) {
+        this.robot = robot;
     }
+
+    public abstract Action turn();
 }

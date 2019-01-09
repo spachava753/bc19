@@ -3,14 +3,27 @@ package bc19;
 public class Pilgrim extends RobotType{
 
     private static final int[][] choices = {{0,-1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {1, 0}, {-1, -1}};
-    private BCAbstractRobot robot = null;
+
+    public Pilgrim(BCAbstractRobot robot) {
+        super(robot);
+    }
 
     @Override
-    public Action turn(BCAbstractRobot r) {
-        this.robot = r;
+    public Action turn() {
+        Action action = null;
         Random random = new Random();
         int[] choice = choices[random.nextInt(choices.length)];
         robot.log("Trying to find nearest deposit");
-        return robot.move(choice[0], choice[1]);
+
+        boolean[][] karbMap = robot.getKarboniteMap();
+        boolean[][] fuelMap = robot.getFuelMap();
+
+        // go to the nearest karb deposit
+        // search from our current location
+
+
+
+        action = robot.move(choice[0], choice[1]);
+        return action;
     }
 }
