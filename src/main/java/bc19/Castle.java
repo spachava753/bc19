@@ -9,6 +9,13 @@ public class Castle extends RobotType{
 
     public Castle(BCAbstractRobot robot) {
         super(robot);
+        for (int i = 0; i < robot.getKarboniteMap().length; i++){
+            for (int x = 0; x < robot.getKarboniteMap()[0].length; x++) {
+                if (robot.getKarboniteMap()[i][x]){
+                    robot.log("i: " + i + ", x: " + x);
+                }
+            }
+        }
     }
 
     private void initialize() {
@@ -62,15 +69,16 @@ public class Castle extends RobotType{
 
     @Override
     public Action turn() {
-
+        Action action = null;
         if(!initialized){
-            //initialize();
+            initialize();
             initialized = true;
         }
 
         Random random = new Random();
         int[] choice = choices[random.nextInt(choices.length)];
         robot.log("BUILDING NEW UNIT");
-        return robot.buildUnit(Constants.PILGRIM_UNIT, choice[0], choice[1]);
+        //action = robot.buildUnit(Constants.PILGRIM_UNIT, choice[0], choice[1]);
+        return action;
     }
 }

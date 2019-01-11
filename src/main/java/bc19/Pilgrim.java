@@ -29,12 +29,17 @@ public class Pilgrim extends RobotType {
         }
         */
 
+        //action = robot.move(nodes.get(0).x, nodes.get(0).y);
+        //nodes.remove(0);
+
+        //find karb deposits
+
+        boolean[][] karbMap = robot.getKarboniteMap();
+
         Random random = new Random();
         int[] choice = choices[random.nextInt(choices.length)];
         action = robot.move(choice[0], choice[1]);
 
-        //action = robot.move(nodes.get(0).x, nodes.get(0).y);
-        //nodes.remove(0);
         return action;
     }
 }
