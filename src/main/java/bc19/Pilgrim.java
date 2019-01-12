@@ -9,6 +9,7 @@ public class Pilgrim extends RobotType {
 
     private int[][] fullMap;
     private int[] refinery;
+    private boolean builtChurch = false;
 
     public Pilgrim(BCAbstractRobot robot) {
         super(robot);
@@ -39,8 +40,21 @@ public class Pilgrim extends RobotType {
                 robot.log("refinery is null");
             }
         } else if(fullMap[robot.me.y][robot.me.x] == Util.KARBONITE || fullMap[robot.me.y][robot.me.x] == Util.FUEL) {
-            robot.log("MINING RESOURCES");
-            action = robot.mine();
+            // each pilgrim that mines is responsible for building at least one church, to protect the resource
+
+            if(!builtChurch && (robot.karbonite > ChurchConstants.KARB_CONSTRUCTION_COST && robot.fuel > ChurchConstants.FUEL_CONSTRUCTION_COST)){
+                // build a church somewhere
+                for(int i = 0; i < 8 || action == null; i++){
+                    int[] randDir = Util.getRandomDir();
+                    action = build(robot, Constants.CHURCH_UNIT, randDir[0], randDir[1]);
+                }
+
+                if(action != null)
+                    builtChurch = true;
+            } else {
+                robot.log("MINING RESOURCES");
+                action = robot.mine();
+            }
         } else {
             robot.log("MOVING RANDOMLY");
             int[] randDir = Util.getRandomDir();
@@ -48,6 +62,17 @@ public class Pilgrim extends RobotType {
         }
 
         return action;
+    }
+
+    private Action build(BCAbstractRobot robot, int churchUnit, int dx, int dy) {
+        // do some validations here
+
+        // check if off the map
+        if(robot.me.x + dx < 0 || robot.me.y < 0){
+            return null;
+        } else {
+            return robot.buildUnit(Constants.CHURCH_UNIT, dx, dy);
+        }
     }
 
     private Action move(BCAbstractRobot robot, int x, int y) {

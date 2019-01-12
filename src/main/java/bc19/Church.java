@@ -1,14 +1,14 @@
 package bc19;
 
-import java.util.List;
+public class Church extends RobotType {
 
-public class Castle extends RobotType{
+    private static final int[][] choices = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {1, 0}, {-1, -1}};
 
     private boolean verticalSymetry;
     private boolean initialized = false;
     private int[][] fullMap;
 
-    public Castle(BCAbstractRobot robot) {
+    public Church(BCAbstractRobot robot) {
         super(robot);
         fullMap = Util.aggregateMap(robot);
         robot.log(String.valueOf(fullMap));
@@ -42,37 +42,51 @@ public class Castle extends RobotType{
     @Override
     public Action turn() {
         Action action = null;
-        if(!initialized){
+        robot.log("INSIDE CHURCH TURN METHOD");
+
+        if (!initialized) {
             initialize();
             initialized = true;
         }
 
-        // check if a deposit is in one of our adjacent squares
-        List<int[]> tileDir = Util.getAdjacentTilesWithDeposits(robot, fullMap);
-        if(!tileDir.isEmpty()){
-            //robot.log("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
 
-            for(int[] direction: tileDir){
-                action = buildUnit(robot, Constants.PILGRIM_UNIT, direction[0], direction[1]);
-                if(action != null) {
-                    break;
-                }
+        // spam crusaders
+
+        if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
+            // number of times to retry building
+            for (int i = 0; i < 8 || action == null; i++) {
+                int[] randDir = Util.getRandomDir();
+                action = buildUnit(robot, Constants.CRUSADER_UNIT, randDir[0], randDir[1]);
             }
+
+            if (action == null)
+                robot.log("COULDN'T BUILD CRUSADER");
         }
+
 
         return action;
     }
 
-    private Action buildUnit(BCAbstractRobot robot, int unit, int dx, int dy){
+    private Action buildUnit(BCAbstractRobot robot, int unit, int dx, int dy) {
         int x = robot.me.x + dx;
         int y = robot.me.y + dy;
+
+        //robot.log("x is " + x);
+        //robot.log("y is " + y);
+
         // check if that specific tile is occupied
         int[][] visibleMap = robot.getVisibleRobotMap();
-        if(visibleMap[y][x] == 0){
-
-            //robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
-            return robot.buildUnit(Constants.PILGRIM_UNIT, dx, dy);
-        } else
+        if (visibleMap[y][x] != 0) {
             return null;
+        } else if (x < 0 || y < 0) {
+            return null;
+        } else if (x > fullMap.length || y > fullMap.length) {
+            return null;
+        }
+        else {
+            robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
+            return robot.buildUnit(unit, dx, dy);
+        }
+
     }
 }

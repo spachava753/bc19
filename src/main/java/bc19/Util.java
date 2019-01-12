@@ -1,5 +1,6 @@
 package bc19;
 
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,8 +95,14 @@ public final class Util {
             }
         }
 
-        //robot.log("found a total of " + depositTileDirections.size() + " in the adjacent tiles");
+        robot.log("found a total of " + depositTileDirections.size() + " in the adjacent tiles");
 
         return depositTileDirections;
+    }
+
+    public static double findDistance(int x1, int y1, int x2, int y2){
+        int x = x2 - x1;
+        int y = y2 - y1;
+        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     }
 }

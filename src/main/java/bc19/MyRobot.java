@@ -36,12 +36,14 @@ public class MyRobot extends BCAbstractRobot {
                     robotType = new Castle(this);
                     break;
                 case Constants.CHURCH_UNIT:
-                    return runChurch();
+                    robotType = new Church(this);
+                    break;
                 case Constants.PILGRIM_UNIT:
                     robotType = new Pilgrim(this);
                     break;
                 case Constants.CRUSADER_UNIT:
-                    return runCrusader();
+                    robotType = new Crusader(this);
+                    break;
                 case Constants.PROPHET_UNIT:
                     return runProphet();
                 case Constants.PREACHER_UNIT:
@@ -55,15 +57,6 @@ public class MyRobot extends BCAbstractRobot {
         log("GLOBAL KARB: " + robotType.robot.karbonite);
         log("GLOBAL FUEL: " + robotType.robot.fuel);
         return robotType.turn();
-    }
-
-
-    public Action runChurch() {
-        return null;
-    }
-
-    public Action runCrusader() {
-        return null;
     }
 
     public Action runProphet() {
