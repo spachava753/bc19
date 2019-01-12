@@ -52,6 +52,8 @@ public class MyRobot extends BCAbstractRobot {
         }
 
         log("Execution time: " + String.valueOf(System.currentTimeMillis()-currentTime));
+        log("GLOBAL KARB: " + robotType.robot.karbonite);
+        log("GLOBAL FUEL: " + robotType.robot.fuel);
         return robotType.turn();
     }
 

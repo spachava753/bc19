@@ -9,6 +9,6 @@ public class PilgrimConstants {
     public static final int MOVEMENT_SPEED = 4;
     public static final int MOVEMENT_FUEL_COST = 1;
     public static final int KARB_CARRYING_CAPACITY = 20;
-    public static final int FULE_CARRYING_CAPACITY = 100;
+    public static final int FUEL_CARRYING_CAPACITY = 100;
 
 }
