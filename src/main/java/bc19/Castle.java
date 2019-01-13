@@ -1,8 +1,6 @@
 package bc19;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class Castle extends RobotType {
 
@@ -14,7 +12,7 @@ public class Castle extends RobotType {
     public Castle(BCAbstractRobot robot) {
         super(robot);
         fullMap = Util.aggregateMap(robot);
-        robot.log(String.valueOf(fullMap));
+        //robot.log(String.valueOf(fullMap));
         for(int[] col: fullMap){
             for(int tile: col){
                 if(tile == Util.FUEL || tile == Util.KARBONITE) {
@@ -23,10 +21,10 @@ public class Castle extends RobotType {
             }
         }
 
-        intialize();
+        initialize();
     }
 
-    private void intialize(){
+    private void initialize(){
         CrusaderConstants.KARB_CONSTRUCTION_COST = robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE;
         CrusaderConstants.FUEL_CONSTRUCTION_COST = robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL;
     }
@@ -52,16 +50,17 @@ public class Castle extends RobotType {
 
         // defensive measures
         if(enemyRobot != null){
-            robot.log("FOUND AN ENEMY ROBOT");
+            //robot.log("FOUND AN ENEMY ROBOT");
             if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
                 int[] goalDir = Util.getDir(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
                 action = buildUnit(robot, Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
 
-                if (action == null)
-                    robot.log("COULDN'T BUILD CRUSADER");
+                if (action == null) {
+                    //robot.log("COULDN'T BUILD CRUSADER");
+                }
             }
         } else if (!tileDir.isEmpty() && (tileDir.size() > pilgrimsBuilt)) {
-            robot.log("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
+            //robot.log("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
 
             for (int[] direction : tileDir) {
                 action = buildUnit(robot, Constants.PILGRIM_UNIT, direction[0], direction[1]);
@@ -72,13 +71,15 @@ public class Castle extends RobotType {
             }
         } else if(numOfDeposits > pilgrimsBuilt) {
             // number of times to retry building
-            for (int i = 0; i < 20 || action == null; i++) {
+            //robot.log("NOW BUILDING PILGRIMS FOR FAR AWAY DEPOSITS");
+            for (int i = 0; i < 20; i++) {
                 int[] randDir = Util.getRandomDir();
                 action = buildUnit(robot, Constants.PILGRIM_UNIT, randDir[0], randDir[1]);
+                if(action != null){
+                    pilgrimsBuilt++;
+                    break;
+                }
             }
-
-            if(action != null)
-                pilgrimsBuilt++;
         } else {
             if (crusadersBuilt > 20) {
                 action = null;
@@ -89,8 +90,9 @@ public class Castle extends RobotType {
                     action = buildUnit(robot, Constants.CRUSADER_UNIT, randDir[0], randDir[1]);
                 }
 
-                if (action == null)
-                    robot.log("COULDN'T BUILD CRUSADER");
+                if (action == null){
+                    //robot.log("COULDN'T BUILD CRUSADER");
+                }
                 else
                     crusadersBuilt++;
             }
@@ -100,17 +102,17 @@ public class Castle extends RobotType {
     }
 
     private Action buildUnit(BCAbstractRobot robot, int unit, int dx, int dy) {
-        robot.log("BUILDING A NEW UNIT");
+        //robot.log("BUILDING A NEW UNIT");
         int x = robot.me.x + dx;
         int y = robot.me.y + dy;
         // check if that specific tile is occupied
         int[][] visibleMap = robot.getVisibleRobotMap();
         if (visibleMap[y][x] != 0) {
-            robot.log("GIVEN TILE IS OCCUPIED");
+            //robot.log("GIVEN TILE IS OCCUPIED");
             return null;
         }
 
-        robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
+        //robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
         return robot.buildUnit(unit, dx, dy);
     }
 }

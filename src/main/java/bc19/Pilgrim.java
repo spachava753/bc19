@@ -9,46 +9,23 @@ public class Pilgrim extends RobotType {
 
     private int[][] fullMap;
     private int[] refinery;
-    private boolean builtChurch = false;
+    private boolean refineryAvailable = false;
 
     public Pilgrim(BCAbstractRobot robot) {
         super(robot);
         fullMap = Util.aggregateMap(robot);
-        refinery = discoverRefineries();
+        //refinery = discoverRefineries();
     }
 
     @Override
     public Action turn() {
         Action action = null;
 
-        // check if we have a church nearby
-        int[][] robotMap = robot.getVisibleRobotMap();
-        if(refinery != null && robotMap[refinery[1]][refinery[0]] != 0 && robotMap[refinery[1]][refinery[0]] != -1){
-            if(discoverRefineries() != null){
-                builtChurch = true;
-                refinery = discoverRefineries();
-                robot.log("FOUND CHURCH SUCCESSFULLY");
-            }
-
-        }
-
         // if we are full of resources, give it to a castle or church
         if (robot.me.karbonite == PilgrimConstants.KARB_CARRYING_CAPACITY || robot.me.fuel == PilgrimConstants.FUEL_CARRYING_CAPACITY) {
             robot.log("FULL OF RESOURCES");
-            if (refinery != null && Math.floor(Util.findDistance(refinery[0], refinery[1], robot.me.x, robot.me.y)) == 1) {
-                int dx = refinery[0] - robot.me.x;
-                int dy = refinery[1] - robot.me.y;
-                action = robot.give(dx, dy, robot.me.karbonite, robot.me.fuel);
-            } else {
-                robot.log("refinery is null");
-                robot.log("DISCOVERING NEW REFINERIES");
-                if(discoverRefineries() != null)
-                    refinery = discoverRefineries();
-            }
-        // if we are on a deposit, build a church so we cash in our resources
-        } else if (fullMap[robot.me.y][robot.me.x] == Util.KARBONITE || fullMap[robot.me.y][robot.me.x] == Util.FUEL) {
             // each pilgrim that mines is responsible for building at least one church, to protect the resource
-            if (!builtChurch && (robot.karbonite > ChurchConstants.KARB_CONSTRUCTION_COST && robot.fuel > ChurchConstants.FUEL_CONSTRUCTION_COST)) {
+            if (!refineryAvailable && (robot.karbonite > ChurchConstants.KARB_CONSTRUCTION_COST && robot.fuel > ChurchConstants.FUEL_CONSTRUCTION_COST)) {
                 // build a church somewhere
                 int[] randDir = Util.getRandomDir();
                 for (int i = 0; i < 8 || action == null; i++) {
@@ -60,6 +37,26 @@ public class Pilgrim extends RobotType {
                     robot.log("BUILDING A NEW CHURCH");
                 }
             }
+
+            if (refinery != null && Math.floor(Util.findDistance(refinery[0], refinery[1], robot.me.x, robot.me.y)) == 1) {
+                int dx = refinery[0] - robot.me.x;
+                int dy = refinery[1] - robot.me.y;
+                action = robot.give(dx, dy, robot.me.karbonite, robot.me.fuel);
+            } else {
+                robot.log("refinery is null");
+                robot.log("DISCOVERING NEW REFINERIES");
+                if(discoverRefineries() != null){
+                    refinery = discoverRefineries();
+                    refineryAvailable = true;
+                }
+            }
+        // if we are on a deposit, build a church so we cash in our resources
+        } else if (fullMap[robot.me.y][robot.me.x] == Util.KARBONITE || fullMap[robot.me.y][robot.me.x] == Util.FUEL) {
+
+            if(refinery == null)
+                refinery = discoverRefineries();
+            else
+                refineryAvailable = true;
 
             if(action == null) {
                 robot.log("MINING RESOURCES");

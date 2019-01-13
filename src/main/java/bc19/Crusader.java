@@ -19,11 +19,11 @@ public class Crusader extends RobotType {
         Action action = null;
         Robot enemyRobot = null;
 
-        robot.log("TRYING TO FIND AN ENEMY ROBOT");
+        //robot.log("TRYING TO FIND AN ENEMY ROBOT");
         for (Robot visibleRobot : robot.getVisibleRobots()) {
             if (visibleRobot.team != robot.me.team) {
                 enemyRobot = visibleRobot;
-                robot.log("FOUND AN ENEMY ROBOT");
+                //robot.log("FOUND AN ENEMY ROBOT");
                 break;
             }
         }
@@ -32,12 +32,12 @@ public class Crusader extends RobotType {
         if (enemyRobot != null) {
             // see if we can attack him
             double distToEnemy = Util.findDistance(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
-            robot.log("DISTANCE TO ENEMY IS " + distToEnemy);
+            //robot.log("DISTANCE TO ENEMY IS " + distToEnemy);
             if (distToEnemy > CrusaderConstants.MAX_ATTACK_RANGE) {
                 // move toward the enemy
                 int newX = enemyRobot.x - robot.me.x;
                 int newY = enemyRobot.y - robot.me.y;
-                robot.log("MOVING TOWARD THE ENEMY");
+                //robot.log("MOVING TOWARD THE ENEMY");
                 if (newX > CrusaderConstants.MOVEMENT_SPEED) {
                     newX = CrusaderConstants.MOVEMENT_SPEED;
                 }
@@ -49,20 +49,20 @@ public class Crusader extends RobotType {
                 int dx = newX;
                 int dy = newY;
 
-                robot.log("dx: " + dx);
-                robot.log("dy: " + dy);
+                //robot.log("dx: " + dx);
+                //robot.log("dy: " + dy);
 
                 action = move(robot, dx, dy);
             } else {
                 //attack the enemy
-                robot.log("ATTACKING THE ENEMY");
+                //robot.log("ATTACKING THE ENEMY");
                 int dx = enemyRobot.x - robot.me.x;
                 int dy = enemyRobot.y - robot.me.y;
                 action = robot.attack(dx, dy);
             }
         } else {
             // move randomly
-            robot.log("MOVING RANDOMLY ROBOT");
+            //robot.log("MOVING RANDOMLY ROBOT");
             int[] goalDir;
             goalDir = Util.getRandomDir();
             action = move(robot, goalDir[0], goalDir[1]);

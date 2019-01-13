@@ -94,7 +94,7 @@ public final class Util {
             }
         }
 
-        robot.log("found a total of " + depositTileDirections.size() + " in the adjacent tiles");
+        //robot.log("found a total of " + depositTileDirections.size() + " in the adjacent tiles");
 
         return depositTileDirections;
     }

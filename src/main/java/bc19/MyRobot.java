@@ -5,10 +5,11 @@ public class MyRobot extends BCAbstractRobot {
     private RobotType robotType = null;
 
     public Action turn() {
+        log("-------------------- BEGIN TURN -----------------------");
         int unit_type = me.unit;
-        log("INSIDE TURN " + me.turn);
         switch (unit_type) {
             case Constants.CASTLE_UNIT:
+                log("INSIDE TURN " + me.turn);
                 log("UNIT TYPE: Castle");
                 break;
             case Constants.CHURCH_UNIT:
@@ -57,7 +58,7 @@ public class MyRobot extends BCAbstractRobot {
         log("Execution time: " + String.valueOf(System.currentTimeMillis() - currentTime));
         log("GLOBAL KARB: " + robotType.robot.karbonite);
         log("GLOBAL FUEL: " + robotType.robot.fuel);
-        log("-------------------------------------------");
+        log("-------------------- END TURN -----------------------");
         return action;
     }
 
