@@ -2,41 +2,11 @@ package bc19;
 
 public class Church extends RobotType {
 
-    private static final int[][] choices = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {1, 0}, {-1, -1}};
-
-    private boolean verticalSymetry;
-    private boolean initialized = false;
     private int[][] fullMap;
-
     public Church(BCAbstractRobot robot) {
         super(robot);
         fullMap = Util.aggregateMap(robot);
         robot.log(String.valueOf(fullMap));
-    }
-
-    private void initialize() {
-
-        int mapSize = robot.getPassableMap().length;
-
-        if (robot.me.team == 0) {
-            // Red Team
-            //robot.log("Castle on red team");
-        } else {
-            // Blue Team
-            //robot.log("Castle on blue team");
-        }
-
-        //robot.log("My location is => x:"+robot.me.x + " y:"+robot.me.y);
-
-        if (verticalSymetry) {
-            //robot.log("Believe map is vertically symmetric");
-            //robot.log("Believe enemy Castle is at position => x:"+(mapSize - 1 - robot.me.x)+" y:"+robot.me.y);
-        } else {
-            //robot.log("Believe map is horizontally symmetric");
-            //robot.log("Believe enemy Castle is at position => x:"+robot.me.x+" y:"+(mapSize - 1 -robot.me.y));
-        }
-
-
     }
 
     @Override
@@ -44,25 +14,26 @@ public class Church extends RobotType {
         Action action = null;
         robot.log("INSIDE CHURCH TURN METHOD");
 
-        if (!initialized) {
-            initialize();
-            initialized = true;
-        }
-
-
-        // spam crusaders
-
-        if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
-            // number of times to retry building
-            for (int i = 0; i < 8 || action == null; i++) {
-                int[] randDir = Util.getRandomDir();
-                action = buildUnit(robot, Constants.CRUSADER_UNIT, randDir[0], randDir[1]);
+        // check if enemies have been spotted
+        int[] enemyRobotLoc = null;
+        for (Robot visibleRobot : robot.getVisibleRobots()) {
+            if (visibleRobot.team != robot.me.team) {
+                enemyRobotLoc = new int[2];
+                enemyRobotLoc[0] = visibleRobot.x;
+                enemyRobotLoc[1] = visibleRobot.y;
             }
-
-            if (action == null)
-                robot.log("COULDN'T BUILD CRUSADER");
         }
 
+        if (enemyRobotLoc != null) {
+            // spam crusaders
+            if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
+                int[] goalDir = Util.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
+                action = buildUnit(robot, Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
+
+                if (action == null)
+                    robot.log("COULDN'T BUILD CRUSADER");
+            }
+        }
 
         return action;
     }
@@ -82,8 +53,7 @@ public class Church extends RobotType {
             return null;
         } else if (x > fullMap.length || y > fullMap.length) {
             return null;
-        }
-        else {
+        } else {
             robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
             return robot.buildUnit(unit, dx, dy);
         }

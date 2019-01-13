@@ -6,7 +6,7 @@ public class MyRobot extends BCAbstractRobot {
 
     public Action turn() {
         int unit_type = me.unit;
-        log("INSIDE TURN " +  me.turn);
+        log("INSIDE TURN " + me.turn);
         switch (unit_type) {
             case Constants.CASTLE_UNIT:
                 log("UNIT TYPE: Castle");
@@ -30,7 +30,7 @@ public class MyRobot extends BCAbstractRobot {
                 return null;
         }
         long currentTime = System.currentTimeMillis();
-        if (robotType == null){
+        if (robotType == null) {
             switch (unit_type) {
                 case Constants.CASTLE_UNIT:
                     robotType = new Castle(this);
@@ -53,10 +53,12 @@ public class MyRobot extends BCAbstractRobot {
             }
         }
 
-        log("Execution time: " + String.valueOf(System.currentTimeMillis()-currentTime));
+        Action action = robotType.turn();
+        log("Execution time: " + String.valueOf(System.currentTimeMillis() - currentTime));
         log("GLOBAL KARB: " + robotType.robot.karbonite);
         log("GLOBAL FUEL: " + robotType.robot.fuel);
-        return robotType.turn();
+        log("-------------------------------------------");
+        return action;
     }
 
     public Action runProphet() {

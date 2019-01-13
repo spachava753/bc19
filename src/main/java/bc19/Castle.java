@@ -2,11 +2,11 @@ package bc19;
 
 import java.util.List;
 
-public class Castle extends RobotType{
+public class Castle extends RobotType {
 
-    private boolean verticalSymetry;
-    private boolean initialized = false;
     private int[][] fullMap;
+    private int pilgrimsBuilt;
+    private int crusadersBuilt;
 
     public Castle(BCAbstractRobot robot) {
         super(robot);
@@ -14,64 +14,52 @@ public class Castle extends RobotType{
         robot.log(String.valueOf(fullMap));
     }
 
-    private void initialize() {
-
-        int mapSize = robot.getPassableMap().length;
-
-        if (robot.me.team == 0) {
-            // Red Team
-            //robot.log("Castle on red team");
-        } else {
-            // Blue Team
-            //robot.log("Castle on blue team");
-        }
-
-        //robot.log("My location is => x:"+robot.me.x + " y:"+robot.me.y);
-
-        if (verticalSymetry) {
-            //robot.log("Believe map is vertically symmetric");
-            //robot.log("Believe enemy Castle is at position => x:"+(mapSize - 1 - robot.me.x)+" y:"+robot.me.y);
-        } else {
-            //robot.log("Believe map is horizontally symmetric");
-            //robot.log("Believe enemy Castle is at position => x:"+robot.me.x+" y:"+(mapSize - 1 -robot.me.y));
-        }
-
-
-    }
 
     @Override
     public Action turn() {
         Action action = null;
-        if(!initialized){
-            initialize();
-            initialized = true;
-        }
 
         // check if a deposit is in one of our adjacent squares
         List<int[]> tileDir = Util.getAdjacentTilesWithDeposits(robot, fullMap);
-        if(!tileDir.isEmpty()){
+        if (!tileDir.isEmpty() && (tileDir.size() != pilgrimsBuilt)) {
             //robot.log("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
 
-            for(int[] direction: tileDir){
+            for (int[] direction : tileDir) {
                 action = buildUnit(robot, Constants.PILGRIM_UNIT, direction[0], direction[1]);
-                if(action != null) {
+                if (action != null) {
+                    pilgrimsBuilt++;
                     break;
                 }
+            }
+        } else {
+            if (crusadersBuilt > 20) {
+                action = null;
+            } else if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
+                // number of times to retry building
+                for (int i = 0; i < 20 || action == null; i++) {
+                    int[] randDir = Util.getRandomDir();
+                    action = buildUnit(robot, Constants.CRUSADER_UNIT, randDir[0], randDir[1]);
+                }
+
+                if (action == null)
+                    robot.log("COULDN'T BUILD CRUSADER");
+                else
+                    crusadersBuilt++;
             }
         }
 
         return action;
     }
 
-    private Action buildUnit(BCAbstractRobot robot, int unit, int dx, int dy){
+    private Action buildUnit(BCAbstractRobot robot, int unit, int dx, int dy) {
         int x = robot.me.x + dx;
         int y = robot.me.y + dy;
         // check if that specific tile is occupied
         int[][] visibleMap = robot.getVisibleRobotMap();
-        if(visibleMap[y][x] == 0){
+        if (visibleMap[y][x] == 0) {
 
             //robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
-            return robot.buildUnit(Constants.PILGRIM_UNIT, dx, dy);
+            return robot.buildUnit(unit, dx, dy);
         } else
             return null;
     }

@@ -45,28 +45,27 @@ public class PathFinder extends AStar {
     }
 
 
+    public static void main(String[] args) {
+        boolean[][] map = new boolean[][]{
+                {true, true, true, true, true, true, true, true, true},
+                {false, false, true, false, false, false, false, false, true},
+                {true, true, true, true, false, true, true, false, true},
+                {true, true, true, true, true, true, true, false, false},
+                {true, false, false, false, false, true, false, false, false},
+                {true, true, true, true, false, true, true, true, true},
+                {true, true, true, true, false, true, false, false, true},
+                {true, true, true, true, false, true, false, false, true},
+                {true, true, true, true, false, true, false, false, true},
+                {true, true, true, true, false, true, false, false, false},
+                {true, true, true, true, false, true, true, true, true},
+        };
+        PathFinder pf = new PathFinder(map, new Node(map.length - 1, map[0].length - 1));
 
-    public static void main(String [] args){
-            boolean [][] map = new boolean[][]{
-                    {true, true, true, true, true, true, true, true, true},
-                    {false, false, true, false, false, false, false, false, true},
-                    {true, true, true, true, false, true, true, false, true},
-                    {true, true, true, true, true, true, true, false, false},
-                    {true, false, false, false, false, true, false, false, false},
-                    {true, true, true, true, false, true, true, true, true},
-                    {true, true, true, true, false, true, false, false, true},
-                    {true, true, true, true, false, true, false, false, true},
-                    {true, true, true, true, false, true, false, false, true},
-                    {true, true, true, true, false, true, false, false, false},
-                    {true, true, true, true, false, true, true, true, true},
-            };
-            PathFinder pf = new PathFinder(map, new Node(map.length - 1, map[0].length - 1));
+        long begin = System.currentTimeMillis();
 
-            long begin = System.currentTimeMillis();
+        List<Node> nodes = pf.compute(new Node(0, 0));
 
-            List<Node> nodes = pf.compute(new Node(0, 0));
-
-            long end = System.currentTimeMillis();
+        long end = System.currentTimeMillis();
 
 
     }
