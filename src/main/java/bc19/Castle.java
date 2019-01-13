@@ -22,6 +22,13 @@ public class Castle extends RobotType {
                 }
             }
         }
+
+        intialize();
+    }
+
+    private void intialize(){
+        CrusaderConstants.KARB_CONSTRUCTION_COST = robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE;
+        CrusaderConstants.FUEL_CONSTRUCTION_COST = robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL;
     }
 
 
@@ -29,10 +36,32 @@ public class Castle extends RobotType {
     public Action turn() {
         Action action = null;
 
+        //prioritize building crusaders if there is an enemy within our vision radius
+        Robot enemyRobot = null;
+        for(Robot visibleRobot: robot.getVisibleRobots()){
+            if(visibleRobot.team != robot.me.team){
+                enemyRobot = visibleRobot;
+                break;
+            }
+        }
+
+
         // check if a deposit is in one of our adjacent squares
         List<int[]> tileDir = Util.getAdjacentTilesWithDeposits(robot, fullMap);
-        if (!tileDir.isEmpty() && (tileDir.size() > pilgrimsBuilt)) {
-            //robot.log("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
+
+
+        // defensive measures
+        if(enemyRobot != null){
+            robot.log("FOUND AN ENEMY ROBOT");
+            if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
+                int[] goalDir = Util.getDir(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
+                action = buildUnit(robot, Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
+
+                if (action == null)
+                    robot.log("COULDN'T BUILD CRUSADER");
+            }
+        } else if (!tileDir.isEmpty() && (tileDir.size() > pilgrimsBuilt)) {
+            robot.log("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
 
             for (int[] direction : tileDir) {
                 action = buildUnit(robot, Constants.PILGRIM_UNIT, direction[0], direction[1]);
@@ -50,7 +79,7 @@ public class Castle extends RobotType {
 
             if(action != null)
                 pilgrimsBuilt++;
-        }else {
+        } else {
             if (crusadersBuilt > 20) {
                 action = null;
             } else if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
@@ -71,15 +100,17 @@ public class Castle extends RobotType {
     }
 
     private Action buildUnit(BCAbstractRobot robot, int unit, int dx, int dy) {
+        robot.log("BUILDING A NEW UNIT");
         int x = robot.me.x + dx;
         int y = robot.me.y + dy;
         // check if that specific tile is occupied
         int[][] visibleMap = robot.getVisibleRobotMap();
-        if (visibleMap[y][x] == 0) {
-
-            //robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
-            return robot.buildUnit(unit, dx, dy);
-        } else
+        if (visibleMap[y][x] != 0) {
+            robot.log("GIVEN TILE IS OCCUPIED");
             return null;
+        }
+
+        robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
+        return robot.buildUnit(unit, dx, dy);
     }
 }

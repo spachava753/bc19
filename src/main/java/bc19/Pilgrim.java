@@ -14,42 +14,36 @@ public class Pilgrim extends RobotType {
     public Pilgrim(BCAbstractRobot robot) {
         super(robot);
         fullMap = Util.aggregateMap(robot);
-        for (Robot visibleRobot : robot.getVisibleRobots()) {
-            if (visibleRobot.team == robot.me.team) {
-                if (visibleRobot.unit == Constants.CASTLE_UNIT || visibleRobot.unit == Constants.CHURCH_UNIT) {
-                    refinery = new int[2];
-                    refinery[0] = visibleRobot.x;
-                    refinery[1] = visibleRobot.y;
-                    break;
-                }
-            }
-        }
+        refinery = discoverRefineries();
     }
 
     @Override
     public Action turn() {
         Action action = null;
 
+        // check if we have a church nearby
+        int[][] robotMap = robot.getVisibleRobotMap();
+        if(refinery != null && robotMap[refinery[1]][refinery[0]] != 0 && robotMap[refinery[1]][refinery[0]] != -1){
+            if(discoverRefineries() != null){
+                builtChurch = true;
+                refinery = discoverRefineries();
+                robot.log("FOUND CHURCH SUCCESSFULLY");
+            }
+
+        }
+
         // if we are full of resources, give it to a castle or church
         if (robot.me.karbonite == PilgrimConstants.KARB_CARRYING_CAPACITY || robot.me.fuel == PilgrimConstants.FUEL_CARRYING_CAPACITY) {
             robot.log("FULL OF RESOURCES");
-            if (refinery != null || Math.floor(Util.findDistance(refinery[0], refinery[1], robot.me.x, robot.me.y)) > 1) {
+            if (refinery != null && Math.floor(Util.findDistance(refinery[0], refinery[1], robot.me.x, robot.me.y)) == 1) {
                 int dx = refinery[0] - robot.me.x;
                 int dy = refinery[1] - robot.me.y;
                 action = robot.give(dx, dy, robot.me.karbonite, robot.me.fuel);
             } else {
                 robot.log("refinery is null");
                 robot.log("DISCOVERING NEW REFINERIES");
-                for (Robot visibleRobot : robot.getVisibleRobots()) {
-                    if (visibleRobot.team == robot.me.team) {
-                        if (visibleRobot.unit == Constants.CASTLE_UNIT || visibleRobot.unit == Constants.CHURCH_UNIT) {
-                            refinery = new int[2];
-                            refinery[0] = visibleRobot.x;
-                            refinery[1] = visibleRobot.y;
-                            break;
-                        }
-                    }
-                }
+                if(discoverRefineries() != null)
+                    refinery = discoverRefineries();
             }
         // if we are on a deposit, build a church so we cash in our resources
         } else if (fullMap[robot.me.y][robot.me.x] == Util.KARBONITE || fullMap[robot.me.y][robot.me.x] == Util.FUEL) {
@@ -63,13 +57,11 @@ public class Pilgrim extends RobotType {
                 }
 
                 if (action != null) {
-                    builtChurch = true;
-                    robot.log("BUILT A NEW CHURCH");
-                    refinery[0] = robot.me.x + randDir[0];
-                    refinery[1] = robot.me.y + randDir[1];
-                    robot.log("NEW REFINERY POSITION IS (" + refinery[0] + ", " + refinery[1] + ")");
+                    robot.log("BUILDING A NEW CHURCH");
                 }
-            } else {
+            }
+
+            if(action == null) {
                 robot.log("MINING RESOURCES");
                 action = robot.mine();
             }
@@ -82,15 +74,38 @@ public class Pilgrim extends RobotType {
         return action;
     }
 
+    private int[] discoverRefineries(){
+        int[] refineryPos = null;
+        for (Robot visibleRobot : robot.getVisibleRobots()) {
+            if (visibleRobot.team == robot.me.team) {
+                if ((visibleRobot.unit == Constants.CASTLE_UNIT || visibleRobot.unit == Constants.CHURCH_UNIT)
+                        && Math.floor(Util.findDistance(robot.me.x, robot.me.y, visibleRobot.x, visibleRobot.y)) == 1) {
+                    refineryPos = new int[2];
+                    refineryPos[0] = visibleRobot.x;
+                    refineryPos[1] = visibleRobot.y;
+                    break;
+                }
+            }
+        }
+
+        return refineryPos;
+    }
+
     private Action build(BCAbstractRobot robot, int churchUnit, int dx, int dy) {
+        int x = robot.me.x + dx;
+        int y = robot.me.y + dy;
         // do some validations here
 
         // check if off the map
-        if (robot.me.x + dx < 0 || robot.me.y < 0) {
+        int[][] visibleMap = robot.getVisibleRobotMap();
+        if (visibleMap[y][x] != 0) {
             return null;
-        } else {
-            return robot.buildUnit(Constants.CHURCH_UNIT, dx, dy);
+        } else if (x < 0 || y < 0) {
+            return null;
         }
+
+        robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
+        return robot.buildUnit(Constants.CHURCH_UNIT, dx, dy);
     }
 
     private Action move(BCAbstractRobot robot, int x, int y) {
