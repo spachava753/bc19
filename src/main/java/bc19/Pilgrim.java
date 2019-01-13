@@ -30,27 +30,45 @@ public class Pilgrim extends RobotType {
     public Action turn() {
         Action action = null;
 
+        // if we are full of resources, give it to a castle or church
         if (robot.me.karbonite == PilgrimConstants.KARB_CARRYING_CAPACITY || robot.me.fuel == PilgrimConstants.FUEL_CARRYING_CAPACITY) {
             robot.log("FULL OF RESOURCES");
-            if (refinery != null) {
+            if (refinery != null || Math.floor(Util.findDistance(refinery[0], refinery[1], robot.me.x, robot.me.y)) > 1) {
                 int dx = refinery[0] - robot.me.x;
                 int dy = refinery[1] - robot.me.y;
                 action = robot.give(dx, dy, robot.me.karbonite, robot.me.fuel);
             } else {
                 robot.log("refinery is null");
+                robot.log("DISCOVERING NEW REFINERIES");
+                for (Robot visibleRobot : robot.getVisibleRobots()) {
+                    if (visibleRobot.team == robot.me.team) {
+                        if (visibleRobot.unit == Constants.CASTLE_UNIT || visibleRobot.unit == Constants.CHURCH_UNIT) {
+                            refinery = new int[2];
+                            refinery[0] = visibleRobot.x;
+                            refinery[1] = visibleRobot.y;
+                            break;
+                        }
+                    }
+                }
             }
+        // if we are on a deposit, build a church so we cash in our resources
         } else if (fullMap[robot.me.y][robot.me.x] == Util.KARBONITE || fullMap[robot.me.y][robot.me.x] == Util.FUEL) {
             // each pilgrim that mines is responsible for building at least one church, to protect the resource
-
             if (!builtChurch && (robot.karbonite > ChurchConstants.KARB_CONSTRUCTION_COST && robot.fuel > ChurchConstants.FUEL_CONSTRUCTION_COST)) {
                 // build a church somewhere
+                int[] randDir = Util.getRandomDir();
                 for (int i = 0; i < 8 || action == null; i++) {
-                    int[] randDir = Util.getRandomDir();
+                    randDir = Util.getRandomDir();
                     action = build(robot, Constants.CHURCH_UNIT, randDir[0], randDir[1]);
                 }
 
-                if (action != null)
+                if (action != null) {
                     builtChurch = true;
+                    robot.log("BUILT A NEW CHURCH");
+                    refinery[0] = robot.me.x + randDir[0];
+                    refinery[1] = robot.me.y + randDir[1];
+                    robot.log("NEW REFINERY POSITION IS (" + refinery[0] + ", " + refinery[1] + ")");
+                }
             } else {
                 robot.log("MINING RESOURCES");
                 action = robot.mine();

@@ -1,17 +1,27 @@
 package bc19;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Castle extends RobotType {
 
     private int[][] fullMap;
     private int pilgrimsBuilt;
     private int crusadersBuilt;
+    private int numOfDeposits;
 
     public Castle(BCAbstractRobot robot) {
         super(robot);
         fullMap = Util.aggregateMap(robot);
         robot.log(String.valueOf(fullMap));
+        for(int[] col: fullMap){
+            for(int tile: col){
+                if(tile == Util.FUEL || tile == Util.KARBONITE) {
+                    numOfDeposits++;
+                }
+            }
+        }
     }
 
 
@@ -21,7 +31,7 @@ public class Castle extends RobotType {
 
         // check if a deposit is in one of our adjacent squares
         List<int[]> tileDir = Util.getAdjacentTilesWithDeposits(robot, fullMap);
-        if (!tileDir.isEmpty() && (tileDir.size() != pilgrimsBuilt)) {
+        if (!tileDir.isEmpty() && (tileDir.size() > pilgrimsBuilt)) {
             //robot.log("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
 
             for (int[] direction : tileDir) {
@@ -31,7 +41,16 @@ public class Castle extends RobotType {
                     break;
                 }
             }
-        } else {
+        } else if(numOfDeposits > pilgrimsBuilt) {
+            // number of times to retry building
+            for (int i = 0; i < 20 || action == null; i++) {
+                int[] randDir = Util.getRandomDir();
+                action = buildUnit(robot, Constants.PILGRIM_UNIT, randDir[0], randDir[1]);
+            }
+
+            if(action != null)
+                pilgrimsBuilt++;
+        }else {
             if (crusadersBuilt > 20) {
                 action = null;
             } else if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {

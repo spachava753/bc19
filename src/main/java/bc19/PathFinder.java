@@ -43,6 +43,7 @@ public class PathFinder extends AStar<Node> {
         return ret;
     }
 
+    /*
     public static void main(String[] args) {
         int[][] map = new int[][]{
                 {1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -87,5 +88,6 @@ public class PathFinder extends AStar<Node> {
             System.out.println();
         }
     }
+    */
 
 }
