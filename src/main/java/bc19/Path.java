@@ -1,7 +1,7 @@
 package bc19;
 
-public class Path implements Comparable {
-    public Node point;
+public class Path<T> implements Comparable {
+    public T point;
     public Double f;
     public Double g;
     public Path parent;
@@ -24,11 +24,11 @@ public class Path implements Comparable {
         return (int) (f - p.f);
     }
 
-    public Node getPoint() {
+    public T getPoint() {
         return point;
     }
 
-    public void setPoint(Node p) {
+    public void setPoint(T p) {
         point = p;
     }
 }

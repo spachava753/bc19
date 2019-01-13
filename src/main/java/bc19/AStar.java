@@ -4,34 +4,38 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AStar {
+public abstract class AStar<T> {
 
 
-    private LinkedList<Path> paths;
-    private HashMap<Node, Double> mindists;
+    protected abstract boolean isGoal(T node);
+
+    protected abstract Double g(T from, T to);
+
+    protected abstract Double h(T from, T to);
+
+
+    protected abstract List<T> generateSuccessors(T node);
+
+
+    private PriorityQueue<Path> paths;
+    private HashMap<T, Double> mindists;
     private Double lastCost;
     private int expandedCounter;
-
-    public AStar() {
-        paths = new LinkedList<>();
-        mindists = new HashMap<Node, Double>();
-        expandedCounter = 0;
-        lastCost = 0.0;
-    }
-
-    protected abstract boolean isGoal(Node node);
-
-    protected abstract Double g(Node from, Node to);
-
-    protected abstract Double h(Node from, Node to);
-
-    protected abstract List<Node> generateSuccessors(Node node);
 
     public int getExpandedCounter() {
         return expandedCounter;
     }
 
-    protected Double f(Path p, Node from, Node to) {
+
+    public AStar() {
+        paths = new PriorityQueue<Path>();
+        mindists = new HashMap<T, Double>();
+        expandedCounter = 0;
+        lastCost = 0.0;
+    }
+
+
+    protected Double f(Path p, T from, T to) {
         Double g = g(from, to) + ((p.parent != null) ? p.parent.g : 0.0);
         Double h = h(from, to);
 
@@ -41,38 +45,35 @@ public abstract class AStar {
         return p.f;
     }
 
-    private void expand(Path path) {
-        Node p = path.getPoint();
-        Double min = mindists.get(path.getPoint());
 
+    private void expand(Path<T> path) {
+        T p = path.getPoint();
+        Double min = mindists.get(path.getPoint());
 
         if (min == null || min.doubleValue() > path.f.doubleValue())
             mindists.put(path.getPoint(), path.f);
         else
             return;
 
+        List<T> successors = generateSuccessors(p);
 
-        List<Node> successors = generateSuccessors(p);
-
-
-        for (Node t : successors) {
-
+        for (T t : successors) {
             Path newPath = new Path(path);
             newPath.setPoint(t);
             f(newPath, path.getPoint(), t);
-            paths.add(newPath);
+            paths.offer(newPath);
         }
 
         expandedCounter++;
-
     }
+
 
     public Double getCost() {
         return lastCost;
     }
 
 
-    public List<Node> compute(Node start) {
+    public List<T> compute(T start) {
         try {
             Path root = new Path();
             root.setPoint(start);
@@ -82,21 +83,21 @@ public abstract class AStar {
             expand(root);
 
             for (; ; ) {
-                Path p = paths.poll();
+                Path<T> p = paths.poll();
 
                 if (p == null) {
                     lastCost = Double.MAX_VALUE;
                     return null;
                 }
 
-                Node last = p.getPoint();
+                T last = p.getPoint();
 
                 lastCost = p.g;
 
                 if (isGoal(last)) {
-                    LinkedList<Node> retPath = new LinkedList<Node>();
+                    LinkedList<T> retPath = new LinkedList<T>();
 
-                    for (Path i = p; i != null; i = i.parent) {
+                    for (Path<T> i = p; i != null; i = i.parent) {
                         retPath.addFirst(i.getPoint());
                     }
 
