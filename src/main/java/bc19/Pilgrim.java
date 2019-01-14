@@ -35,6 +35,18 @@ public class Pilgrim extends RobotType {
     public Action turn() {
         Action action = null;
 
+        // delete this code after testing path finding
+        if(goalNode == null){
+            goalNode = new Node(robot.me.x, robot.me.y - 10);
+            pf = new PathFinder(pathMap, goalNode, robot);
+            robot.log("CREATING A NEW PATH");
+            pathNodes = pf.compute(new Node(robot.me.x, robot.me.y));
+            //the path finding gives the first node as my position, so ignore that
+            pathNodes.remove(0);
+            robot.log("PATH NODES: " + pathNodes);
+        }
+
+        /*
         // decide where we need to go, if we need to go somewhere
         if((goalNode == null) || (robot.getVisibleRobotMap()[goalNode.y][goalNode.x] != 0 && robot.getVisibleRobotMap()[goalNode.y][goalNode.x] != -1)){
             robot.log("DECIDING PILGRIM GOAL");
@@ -51,7 +63,7 @@ public class Pilgrim extends RobotType {
                         if(!occupiedNodes.contains(node)){
                             if(fullMap[mapY][mapX] == Util.KARBONITE || fullMap[mapY][mapX] == Util.FUEL){
                                 goalNode = node;
-                                pf = new PathFinder(pathMap, goalNode);
+                                pf = new PathFinder(pathMap, goalNode, robot);
                                 robot.log("CREATING A NEW PATH");
                                 pathNodes = pf.compute(new Node(robot.me.x, robot.me.y));
                                 robot.log("PATH NODES: " + pathNodes);
@@ -66,6 +78,7 @@ public class Pilgrim extends RobotType {
             robot.log("GOAL NODE X: " + goalNode.x);
             robot.log("GOAL NODE Y: " + goalNode.y);
         }
+        */
 
 
         // if we are full of resources, give it to a castle or church
@@ -111,11 +124,15 @@ public class Pilgrim extends RobotType {
             }
         } else {
             robot.log("MOVING TOWARD ANOTHER DEPOSIT");
+            robot.log("NODES PATH SIZE: " + pathNodes.size());
             if(pathNodes != null){
                 Node nextNode = pathNodes.get(0);
-                action = move(robot, nextNode.x, nextNode.y);
+                int[] dir = Util.getDir(robot.me.x, robot.me.y, nextNode.x, nextNode.y);
+                action = move(robot, dir[0], dir[1]);
                 if(action != null){
                     pathNodes.remove(0);
+                } else {
+                    robot.log("MOVE ACTION WAS NULL");
                 }
             } else {
                 robot.log("NODES PATH IS NULL");
@@ -159,22 +176,25 @@ public class Pilgrim extends RobotType {
         return robot.buildUnit(Constants.CHURCH_UNIT, dx, dy);
     }
 
-    private Action move(BCAbstractRobot robot, int x, int y) {
-        int newX = robot.me.x + x;
-        int newY = robot.me.y + y;
+    private Action move(BCAbstractRobot robot, int dx, int dy) {
+        int newX = robot.me.x + dx;
+        int newY = robot.me.y + dy;
 
         // do some validations here
 
         //check if going of  the map
-        if (newX < 0 || newY < 0)
+        if (newX < 0 || newY < 0){
+            robot.log("ONE OF THE GIVEN PARAMETERS WAS LESS THAN ZERO");
             return null;
+        }
 
         for (Robot visibleRobot : robot.getVisibleRobots()) {
             if (visibleRobot.x == newX && visibleRobot.y == newY) {
+                robot.log("A ROBOT OCCUPIES THE SPACE THAT WE ARE TRYING TO GET TO.");
                 return null;
             }
         }
 
-        return robot.move(x, y);
+        return robot.move(dx, dy);
     }
 }

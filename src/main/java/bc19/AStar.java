@@ -61,9 +61,9 @@ public abstract class AStar<T> {
             return;
 
         List<T> successors = generateSuccessors(p);
-        Util.log("GENERATED SUCCESSORS");
+        //Util.log("GENERATED SUCCESSORS");
         Util.log("SUCCESSORS: " + successors);
-        Util.log("SUCCESSORS size: " + successors.size());
+        //Util.log("SUCCESSORS size: " + successors.size());
 
         for (T t : successors) {
             Path newPath = new Path(path);

@@ -1,7 +1,5 @@
 package bc19;
 
-import java.util.List;
-
 public class Castle extends RobotType {
 
     private int[][] fullMap;
@@ -13,9 +11,9 @@ public class Castle extends RobotType {
         super(robot);
         fullMap = Util.aggregateMap(robot);
         //robot.log(String.valueOf(fullMap));
-        for(int[] col: fullMap){
-            for(int tile: col){
-                if(tile == Util.FUEL || tile == Util.KARBONITE) {
+        for (int[] col : fullMap) {
+            for (int tile : col) {
+                if (tile == Util.FUEL || tile == Util.KARBONITE) {
                     numOfDeposits++;
                 }
             }
@@ -24,7 +22,7 @@ public class Castle extends RobotType {
         initialize();
     }
 
-    private void initialize(){
+    private void initialize() {
         CrusaderConstants.KARB_CONSTRUCTION_COST = robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE;
         CrusaderConstants.FUEL_CONSTRUCTION_COST = robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL;
     }
@@ -34,6 +32,16 @@ public class Castle extends RobotType {
     public Action turn() {
         Action action = null;
 
+        //delete later after testing pathfinding code
+        if (pilgrimsBuilt < 1) {
+            int[] randDir = Util.SOUTH;
+            action = buildUnit(robot, Constants.PILGRIM_UNIT, randDir[0], randDir[1]);
+            if (action != null) {
+                pilgrimsBuilt++;
+            }
+        }
+
+        /*
         //prioritize building crusaders if there is an enemy within our vision radius
         Robot enemyRobot = null;
         for(Robot visibleRobot: robot.getVisibleRobots()){
@@ -97,6 +105,7 @@ public class Castle extends RobotType {
                     crusadersBuilt++;
             }
         }
+        */
 
         return action;
     }

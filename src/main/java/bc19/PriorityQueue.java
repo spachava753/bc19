@@ -480,10 +480,13 @@ public class PriorityQueue<E> {
         if (e == null)
             throw new NullPointerException();
         modCount++;
+
+        // simple code to expand the array
         int i = size;
         if (i >= queue.length)
             grow(i + 1);
         size = i + 1;
+
         if (i == 0)
             queue[0] = e;
         else
