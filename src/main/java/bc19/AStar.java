@@ -87,6 +87,7 @@ public abstract class AStar<T> {
 
                 if (p == null) {
                     lastCost = Double.MAX_VALUE;
+                    Util.log("p IS NULL");
                     return null;
                 }
 
@@ -106,7 +107,7 @@ public abstract class AStar<T> {
                 expand(p);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Util.log(e.toString());
         }
         return null;
 

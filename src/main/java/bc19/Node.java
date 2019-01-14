@@ -9,6 +9,12 @@ public class Node {
         this.y = y;
     }
 
+    public boolean equals(Node node) {
+        if(x == node.x && y == node.y)
+            return true;
+        return false;
+    }
+
     public String toString() {
         return "(" + x + ", " + y + ") ";
     }

@@ -6,6 +6,7 @@ public class MyRobot extends BCAbstractRobot {
 
     public Action turn() {
         log("-------------------- BEGIN TURN -----------------------");
+        Util.setRobot(this);
         int unit_type = me.unit;
         switch (unit_type) {
             case Constants.CASTLE_UNIT:

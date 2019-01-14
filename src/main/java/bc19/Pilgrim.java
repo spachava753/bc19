@@ -1,25 +1,68 @@
 package bc19;
 
-/*
- *
- * The current pathfinder is taking longer than 200 seconds to process (I think), so we cant use it. At all. Need to find a more time efficient algorithm.
- *
- */
+import java.util.LinkedList;
+import java.util.List;
+
 public class Pilgrim extends RobotType {
 
     private int[][] fullMap;
+    private int[][] pathMap;
     private int[] refinery;
     private boolean refineryAvailable = false;
+    private PathFinder pf;
+    private List<Node> pathNodes;
+    private Node goalNode;
+    private LinkedList<Node> occupiedNodes;
 
     public Pilgrim(BCAbstractRobot robot) {
         super(robot);
         fullMap = Util.aggregateMap(robot);
+        pathMap = new int[fullMap.length][fullMap.length];
+        for(int i = 0; i < fullMap.length; i++){
+            for(int x = 0; x < fullMap.length; x++){
+                pathMap[i][x] = fullMap[i][x];
+            }
+        }
+        occupiedNodes = new LinkedList();
         //refinery = discoverRefineries();
     }
 
     @Override
     public Action turn() {
         Action action = null;
+
+        // decide where we need to go, if we need to go somewhere
+        if((goalNode == null) || (robot.getVisibleRobotMap()[goalNode.y][goalNode.x] != 0 && robot.getVisibleRobotMap()[goalNode.y][goalNode.x] != -1)){
+            robot.log("DECIDING PILGRIM GOAL");
+            // if the previous goal is null make sure that we add it to the occupied node list
+            if(goalNode != null)
+                occupiedNodes.add(goalNode);
+
+            // set a new goal
+            definePath: {
+                for(int mapY = 0; mapY < fullMap.length; mapY++){
+                    for(int mapX = 0; mapX < fullMap.length; mapX++){
+                        // check if the node is occupied
+                        Node node = new Node(mapX, mapY);
+                        if(!occupiedNodes.contains(node)){
+                            if(fullMap[mapY][mapX] == Util.KARBONITE || fullMap[mapY][mapX] == Util.FUEL){
+                                goalNode = node;
+                                pf = new PathFinder(pathMap, goalNode);
+                                robot.log("CREATING A NEW PATH");
+                                pathNodes = pf.compute(new Node(robot.me.x, robot.me.y));
+                                robot.log("PATH NODES: " + pathNodes);
+                                break definePath;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            robot.log("GOAL NODE HAS ALREADY BEEN DEFINED");
+            robot.log("GOAL NODE X: " + goalNode.x);
+            robot.log("GOAL NODE Y: " + goalNode.y);
+        }
+
 
         // if we are full of resources, give it to a castle or church
         if (robot.me.karbonite == PilgrimConstants.KARB_CARRYING_CAPACITY || robot.me.fuel == PilgrimConstants.FUEL_CARRYING_CAPACITY) {
@@ -45,33 +88,40 @@ public class Pilgrim extends RobotType {
             } else {
                 robot.log("refinery is null");
                 robot.log("DISCOVERING NEW REFINERIES");
-                if(discoverRefineries() != null){
+                if (discoverRefineries() != null) {
                     refinery = discoverRefineries();
                     refineryAvailable = true;
                 }
             }
-        // if we are on a deposit, build a church so we cash in our resources
+            // if we are on a deposit, build a church so we cash in our resources
         } else if (fullMap[robot.me.y][robot.me.x] == Util.KARBONITE || fullMap[robot.me.y][robot.me.x] == Util.FUEL) {
 
-            if(refinery == null)
+            if (refinery == null)
                 refinery = discoverRefineries();
             else
                 refineryAvailable = true;
 
-            if(action == null) {
+            if (action == null) {
                 robot.log("MINING RESOURCES");
                 action = robot.mine();
             }
         } else {
-            robot.log("MOVING RANDOMLY");
-            int[] randDir = Util.getRandomDir();
-            action = move(robot, randDir[0], randDir[1]);
+            robot.log("MOVING TOWARD ANOTHER DEPOSIT");
+            if(pathNodes != null){
+                Node nextNode = pathNodes.get(0);
+                action = move(robot, nextNode.x, nextNode.y);
+                if(action != null){
+                    pathNodes.remove(0);
+                }
+            } else {
+                robot.log("NODES PATH IS NULL");
+            }
         }
 
         return action;
     }
 
-    private int[] discoverRefineries(){
+    private int[] discoverRefineries() {
         int[] refineryPos = null;
         for (Robot visibleRobot : robot.getVisibleRobots()) {
             if (visibleRobot.team == robot.me.team) {
@@ -106,13 +156,21 @@ public class Pilgrim extends RobotType {
     }
 
     private Action move(BCAbstractRobot robot, int x, int y) {
+        int newX = robot.me.x + x;
+        int newY = robot.me.y + y;
+
         // do some validations here
 
         //check if going of  the map
-        if (robot.me.x + x < 0 || robot.me.y + y < 0)
+        if (newX < 0 || newY < 0)
             return null;
-        else {
-            return robot.move(x, y);
+
+        for (Robot visibleRobot : robot.getVisibleRobots()) {
+            if (visibleRobot.x == newX && visibleRobot.y == newY) {
+                return null;
+            }
         }
+
+        return robot.move(x, y);
     }
 }

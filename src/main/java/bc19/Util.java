@@ -19,6 +19,15 @@ public final class Util {
     public static final int[] SOUTHWEST = {-1, -1};
     public static final int[][] DIRECTIONS = {NORTH, SOUTH, EAST, WEST, NORTHEAST, NORTHWEST, SOUTHEAST, SOUTHWEST};
 
+    private static BCAbstractRobot robot;
+
+    public static BCAbstractRobot getRobot() {
+        return robot;
+    }
+
+    public static void setRobot(BCAbstractRobot bcRobot) {
+        robot = bcRobot;
+    }
 
     public static int[][] aggregateMap(BCAbstractRobot robot) {
         int[][] fullMap = new int[robot.map.length][robot.map[0].length];
@@ -135,5 +144,9 @@ public final class Util {
         }
 
         return newDir;
+    }
+
+    public static void log(String msg){
+        robot.log(msg);
     }
 }

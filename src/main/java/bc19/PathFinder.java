@@ -5,13 +5,23 @@ import java.util.List;
 
 public class PathFinder extends AStar<Node> {
     private int[][] map;
+    private Node goal;
 
-    public PathFinder(int[][] map) {
+    public PathFinder(int[][] map, Node goal) {
         this.map = map;
+        this.goal = goal;
+    }
+
+    public Node getGoal() {
+        return goal;
+    }
+
+    public void setGoal(Node goal) {
+        this.goal = goal;
     }
 
     protected boolean isGoal(Node node) {
-        return (node.x == map[0].length - 1) && (node.y == map.length - 1);
+        return (node.x == goal.x) && (node.y == goal.y);
     }
 
     protected Double g(Node from, Node to) {
