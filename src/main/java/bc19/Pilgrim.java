@@ -20,7 +20,11 @@ public class Pilgrim extends RobotType {
         pathMap = new int[fullMap.length][fullMap.length];
         for(int i = 0; i < fullMap.length; i++){
             for(int x = 0; x < fullMap.length; x++){
-                pathMap[i][x] = fullMap[i][x];
+                if(fullMap[i][x] != Util.NONE){
+                    pathMap[i][x] = 1;
+                } else {
+                    pathMap[i][x] = 0;
+                }
             }
         }
         occupiedNodes = new LinkedList();

@@ -10,6 +10,8 @@ public class PathFinder extends AStar<Node> {
     public PathFinder(int[][] map, Node goal) {
         this.map = map;
         this.goal = goal;
+        Util.log("Received map: " + map);
+        Util.log("Received goal: " + goal);
     }
 
     public Node getGoal() {
