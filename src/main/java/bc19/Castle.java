@@ -1,11 +1,14 @@
 package bc19;
 
+import java.util.List;
+
 public class Castle extends RobotType {
 
     private int[][] fullMap;
     private int pilgrimsBuilt;
     private int crusadersBuilt;
     private int numOfDeposits;
+    private boolean buildNextPilgrim = true;
 
     public Castle(BCAbstractRobot robot) {
         super(robot);
@@ -32,16 +35,20 @@ public class Castle extends RobotType {
     public Action turn() {
         Action action = null;
 
-        //delete later after testing pathfinding code
-        if (pilgrimsBuilt < 1) {
-            int[] randDir = Util.SOUTH;
-            action = buildUnit(robot, Constants.PILGRIM_UNIT, randDir[0], randDir[1]);
-            if (action != null) {
-                pilgrimsBuilt++;
+
+        int numOfPilegrimsHealthyAndRefining = 0;
+        for(Robot visibleRobot: robot.getVisibleRobots()){
+            if(visibleRobot.team == robot.me.team){
+                if(visibleRobot.unit == Constants.PILGRIM_UNIT && visibleRobot.castle_talk == CastleTalkConstants.PILGRIM_REFINERY_AVAILABLE){
+                    numOfPilegrimsHealthyAndRefining++;
+                }
             }
         }
 
-        /*
+        if(numOfPilegrimsHealthyAndRefining > 0 && numOfPilegrimsHealthyAndRefining == pilgrimsBuilt){
+            buildNextPilgrim = true;
+        }
+
         //prioritize building crusaders if there is an enemy within our vision radius
         Robot enemyRobot = null;
         for(Robot visibleRobot: robot.getVisibleRobots()){
@@ -78,14 +85,17 @@ public class Castle extends RobotType {
                 }
             }
         } else if(numOfDeposits > pilgrimsBuilt) {
-            // number of times to retry building
-            //robot.log("NOW BUILDING PILGRIMS FOR FAR AWAY DEPOSITS");
-            for (int i = 0; i < 20; i++) {
-                int[] randDir = Util.getRandomDir();
-                action = buildUnit(robot, Constants.PILGRIM_UNIT, randDir[0], randDir[1]);
-                if(action != null){
-                    pilgrimsBuilt++;
-                    break;
+            if(buildNextPilgrim){
+                // number of times to retry building
+                robot.log("BUILDING NEW PILGRIM");
+                for (int i = 0; i < 20; i++) {
+                    int[] randDir = Util.getRandomDir();
+                    action = buildUnit(robot, Constants.PILGRIM_UNIT, randDir[0], randDir[1]);
+                    if(action != null){
+                        buildNextPilgrim = false;
+                        pilgrimsBuilt++;
+                        break;
+                    }
                 }
             }
         } else {
@@ -105,7 +115,6 @@ public class Castle extends RobotType {
                     crusadersBuilt++;
             }
         }
-        */
 
         return action;
     }

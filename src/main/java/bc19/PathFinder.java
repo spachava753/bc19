@@ -12,9 +12,9 @@ public class PathFinder extends AStar<Node> {
         this.map = map;
         this.goal = goal;
         this.robot = robot;
-        Util.log("Received map: " + map);
-        Util.log("Received goal: " + goal);
-        Util.log("Received robot: " + robot);
+        //Util.log("Received map: " + map);
+        //Util.log("Received goal: " + goal);
+        //Util.log("Received robot: " + robot);
     }
 
     public Node getGoal() {
@@ -31,6 +31,12 @@ public class PathFinder extends AStar<Node> {
 
     protected Double g(Node from, Node to) {
 
+        //check to make sure there isn't a robot in the way
+        /*int[][] visibleRobotsMap = robot.getVisibleRobotMap();
+        if(visibleRobotsMap[to.y][to.x] != 0){
+            return Double.MAX_VALUE;
+        }*/
+
         if (from.x == to.x && from.y == to.y)
             return 0.0;
 
@@ -43,6 +49,8 @@ public class PathFinder extends AStar<Node> {
     protected Double h(Node from, Node to) {
         /* Use the Manhattan distance heuristic.  */
         //return new Double(Math.abs(map[0].length - 1 - to.x) + Math.abs(map.length - 1 - to.y));
+
+        /* Use the Euclidean distance heuristic. (I think that is what it is called?) */
         return new Double(Util.findDistance(from.x, from.y, to.x, to.y));
     }
 

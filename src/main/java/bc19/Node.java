@@ -9,6 +9,11 @@ public class Node {
         this.y = y;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return equals((Node) object);
+    }
+
     public boolean equals(Node node) {
         if(x == node.x && y == node.y)
             return true;

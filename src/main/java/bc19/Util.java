@@ -146,6 +146,22 @@ public final class Util {
         return newDir;
     }
 
+    public static List<Node> getDeposits(int[][] fullMap){
+        List<Node> deposits = new ArrayList<>();
+
+        for (int mapY = 0; mapY < fullMap.length; mapY++) {
+            for (int mapX = 0; mapX < fullMap.length; mapX++) {
+                // check if the node is occupied
+                Node node = new Node(mapX, mapY);
+                if (fullMap[mapY][mapX] == Util.KARBONITE || fullMap[mapY][mapX] == Util.FUEL) {
+                    deposits.add(node);
+                }
+            }
+        }
+
+        return deposits;
+    }
+
     public static void log(String msg){
         robot.log(msg);
     }

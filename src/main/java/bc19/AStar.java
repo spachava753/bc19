@@ -47,14 +47,14 @@ public abstract class AStar<T> {
 
 
     private void expand(Path<T> path) {
-        Util.log("INSIDE EXPAND()");
+        //Util.log("INSIDE EXPAND()");
         T p = path.getPoint();
-        Util.log("path.getPoint(): " + p);
+        //Util.log("path.getPoint(): " + p);
         Double min = mindists.get(path.getPoint());
-        Util.log("MIN IS: " + min);
+        //Util.log("MIN IS: " + min);
 
         if (min == null || min.doubleValue() > path.f.doubleValue()){
-            Util.log("min is null or min.doubleValue() > path.f.doubleValue()");
+            //Util.log("min is null or min.doubleValue() > path.f.doubleValue()");
             mindists.put(path.getPoint(), path.f);
         }
         else
@@ -62,7 +62,7 @@ public abstract class AStar<T> {
 
         List<T> successors = generateSuccessors(p);
         //Util.log("GENERATED SUCCESSORS");
-        Util.log("SUCCESSORS: " + successors);
+        //Util.log("SUCCESSORS: " + successors);
         //Util.log("SUCCESSORS size: " + successors.size());
 
         for (T t : successors) {
@@ -83,21 +83,21 @@ public abstract class AStar<T> {
 
     public List<T> compute(T start) {
         try {
-            Util.log("setting root path");
+            //Util.log("setting root path");
             Path root = new Path();
             root.setPoint(start);
 
-            Util.log("calculating f function");
+            //Util.log("calculating f function");
             f(root, start, start);
 
-            Util.log("expanding root path");
+            //Util.log("expanding root path");
             expand(root);
 
-            Util.log("going into for loop");
+            //Util.log("going into for loop");
             for (; ; ) {
-                Util.log("POLLING PATHS");
+                //Util.log("POLLING PATHS");
                 Path<T> p = paths.poll();
-                Util.log("PATH is: " + p);
+                //Util.log("PATH is: " + p);
 
                 if (p == null) {
                     lastCost = Double.MAX_VALUE;
@@ -106,7 +106,7 @@ public abstract class AStar<T> {
                 }
 
                 T last = p.getPoint();
-                Util.log("LAST is: " + last);
+                //Util.log("LAST is: " + last);
 
                 lastCost = p.g;
 
@@ -117,6 +117,8 @@ public abstract class AStar<T> {
                         retPath.addFirst(i.getPoint());
                     }
 
+                    // the first node we are getting is my position, so remove it
+                    retPath.remove(0);
                     return retPath;
                 }
                 expand(p);
