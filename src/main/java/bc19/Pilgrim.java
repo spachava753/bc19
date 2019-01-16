@@ -104,13 +104,15 @@ public class Pilgrim extends RobotType {
                     robot.log("MOVE ACTION WAS NULL");
                     robot.log("CALCULATING NEW PATH");
                     // if the previous goal is not null make sure that we add it to the occupied node list
-                    if (goalNode != null)
+                    if (goalNode != null && !occupiedNodes.contains(goalNode))
                         occupiedNodes.add(goalNode);
+
+                    goalNode = null;
 
                     int[]randDir = Util.getRandomDir();
                     action = move(robot, randDir[0], randDir[1]);
-                    calcGoal();
-                    calcNewPathMap();
+                    //calcGoal();
+                    //calcNewPathMap();
                 }
             } else {
                 robot.log("NODES PATH IS NULL");
