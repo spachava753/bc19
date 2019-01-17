@@ -1,9 +1,8 @@
 package bc19;
 
-import bc19.util.ArrayList;
-import bc19.util.List;
-import bc19.util.Objects;
-import java.util.function.Function;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class RobotType {
 

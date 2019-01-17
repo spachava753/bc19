@@ -1,8 +1,7 @@
 package bc19;
 
-import bc19.lang.Override;
-import bc19.util.LinkedList;
-import bc19.util.List;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Pilgrim extends RobotType {
 

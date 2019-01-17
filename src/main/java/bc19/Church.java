@@ -1,7 +1,5 @@
 package bc19;
 
-import bc19.lang.Override;
-
 public class Church extends RobotType {
 
     public Church(BCAbstractRobot robot) {

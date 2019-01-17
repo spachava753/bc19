@@ -1,7 +1,7 @@
 package bc19;
 
-import bc19.util.ArrayList;
-import bc19.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Util {
     public static final int KARBONITE = 0;

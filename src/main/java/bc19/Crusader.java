@@ -1,7 +1,5 @@
 package bc19;
 
-import bc19.lang.Override;
-
 public class Crusader extends RobotType {
 
     public Crusader(BCAbstractRobot robot) {
