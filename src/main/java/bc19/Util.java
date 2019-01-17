@@ -29,46 +29,6 @@ public final class Util {
         robot = bcRobot;
     }
 
-    public static int[][] aggregateMap(BCAbstractRobot robot) {
-        int[][] fullMap = new int[robot.map.length][robot.map[0].length];
-        for (int y = 0; y < robot.map.length; y++) {
-            for (int x = 0; x < robot.map[0].length; x++) {
-                if (robot.karboniteMap[y][x])
-                    fullMap[y][x] = KARBONITE;
-                else if (robot.fuelMap[y][x])
-                    fullMap[y][x] = FUEL;
-                else if (robot.getPassableMap()[y][x])
-                    fullMap[y][x] = TERRAIN;
-                else
-                    fullMap[y][x] = NONE;
-            }
-        }
-
-        return fullMap;
-    }
-
-    public static boolean isVerticallySymmetric(BCAbstractRobot robot) {
-
-        boolean[][] passableMap = robot.getPassableMap();
-        int mapSize = passableMap.length;
-
-        for (int i = 0; i < mapSize / 2; i++) {
-            for (int j = 0; j < mapSize / 2; j++) {
-                if (passableMap[j][i] != passableMap[mapSize - 1 - j][i]) {
-                    // Has to be vertical
-                    return true;
-                }
-                if (passableMap[j][i] != passableMap[j][mapSize - 1 - i]) {
-                    // Has to be horizontal
-                    return false;
-                }
-            }
-        }
-
-        return true;
-
-    }
-
     public static int[] getRandomDir() {
         Random random = new Random();
         return DIRECTIONS[random.nextInt(DIRECTIONS.length)];
@@ -106,6 +66,10 @@ public final class Util {
         //robot.log("found a total of " + depositTileDirections.size() + " in the adjacent tiles");
 
         return depositTileDirections;
+    }
+
+    public static double findDistance(Node start, Node end) {
+        return findDistance(start.x, start.y, end.x, end.y);
     }
 
     public static double findDistance(int x1, int y1, int x2, int y2) {

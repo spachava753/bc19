@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Pilgrim extends RobotType {
 
-    private int[][] fullMap;
     private int[][] pathMap;
     private int[] refinery;
     private boolean refineryAvailable = false;
@@ -18,16 +17,19 @@ public class Pilgrim extends RobotType {
 
     public Pilgrim(BCAbstractRobot robot) {
         super(robot);
-        fullMap = Util.aggregateMap(robot);
-        deposits = Util.getDeposits(fullMap);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        deposits = Util.getDeposits(getFullMap());
         occupiedNodes = new LinkedList();
     }
 
     @Override
-    public Action turn() {
-        Action action = null;
-
-        if(refineryAvailable){
+    public void initTakeTurn() {
+        super.initTakeTurn();
+        if (refineryAvailable) {
             robot.castleTalk(CastleTalkConstants.PILGRIM_REFINERY_AVAILABLE);
         }
 
@@ -47,6 +49,11 @@ public class Pilgrim extends RobotType {
             robot.log("GOAL NODE Y: " + goalNode.y);
 
         }
+    }
+
+    @Override
+    public Action takeTurn() {
+        Action action = null;
 
 
         // if we are full of resources, give it to a castle or church
@@ -58,7 +65,7 @@ public class Pilgrim extends RobotType {
                 int[] randDir = Util.getRandomDir();
                 for (int i = 0; i < 8 || action == null; i++) {
                     randDir = Util.getRandomDir();
-                    action = build(robot, Constants.CHURCH_UNIT, randDir[0], randDir[1]);
+                    action = build(Constants.CHURCH_UNIT, randDir[0], randDir[1]);
                 }
 
                 if (action != null) {
@@ -80,7 +87,7 @@ public class Pilgrim extends RobotType {
                 }
             }
             // if we are on a deposit, build a church so we cash in our resources
-        } else if (fullMap[robot.me.y][robot.me.x] == Util.KARBONITE || fullMap[robot.me.y][robot.me.x] == Util.FUEL) {
+        } else if (getFullMap()[robot.me.y][robot.me.x] == Util.KARBONITE || getFullMap()[robot.me.y][robot.me.x] == Util.FUEL) {
 
             if (refinery == null)
                 refinery = discoverRefineries();
@@ -97,7 +104,7 @@ public class Pilgrim extends RobotType {
                 robot.log("NODES PATH SIZE: " + pathNodes.size());
                 Node nextNode = pathNodes.get(0);
                 int[] dir = Util.getDir(robot.me.x, robot.me.y, nextNode.x, nextNode.y);
-                action = move(robot, dir[0], dir[1]);
+                action = move(dir[0], dir[1]);
                 if (action != null) {
                     pathNodes.remove(0);
                 } else {
@@ -109,8 +116,8 @@ public class Pilgrim extends RobotType {
 
                     goalNode = null;
 
-                    int[]randDir = Util.getRandomDir();
-                    action = move(robot, randDir[0], randDir[1]);
+                    int[] randDir = Util.getRandomDir();
+                    action = move(randDir[0], randDir[1]);
                     //calcGoal();
                     //calcNewPathMap();
                 }
@@ -126,52 +133,29 @@ public class Pilgrim extends RobotType {
         robot.log("CALC NEW GOAL");
         // set a new goal
 
-        /*
-        definePath:
-        {
-            for (int mapY = 0; mapY < fullMap.length; mapY++) {
-                for (int mapX = 0; mapX < fullMap.length; mapX++) {
-                    // check if the node is occupied
-                    Node node = new Node(mapX, mapY);
-                    if (!occupiedNodes.contains(node)) {
-                        if (fullMap[mapY][mapX] == Util.KARBONITE || fullMap[mapY][mapX] == Util.FUEL) {
-                            goalNode = node;
-                            pf = new PathFinder(pathMap, goalNode, robot);
-                            robot.log("CREATING A NEW PATH");
-                            pathNodes = pf.compute(new Node(robot.me.x, robot.me.y));
-                            robot.log("PATH NODES: " + pathNodes);
-                            break definePath;
-                        }
-                    }
-                }
-            }
-        }
-        */
-
         Node minDistNode = null;
 
-        for(Node node: deposits){
-            if(!occupiedNodes.contains(node)){
-                if(minDistNode == null){
+        for (Node node : deposits) {
+            if (!occupiedNodes.contains(node)) {
+                if (minDistNode == null) {
                     minDistNode = node;
                 } else {
                     double prevDist = Util.findDistance(robot.me.x, robot.me.y, minDistNode.x, minDistNode.y);
                     double newDist = Util.findDistance(robot.me.x, robot.me.y, node.x, node.y);
-                    if(newDist < prevDist){
+                    if (newDist < prevDist) {
                         minDistNode = node;
                     }
                 }
             }
         }
 
-        if(minDistNode != null){
+        if (minDistNode != null) {
             goalNode = minDistNode;
             pf = new PathFinder(pathMap, goalNode, robot);
             robot.log("CREATING A NEW PATH");
             pathNodes = pf.compute(new Node(robot.me.x, robot.me.y));
             robot.log("PATH NODES: " + pathNodes);
-        }
-        else{
+        } else {
             robot.log("ALL DEPOSITS ARE OCCUPIED");
             robot.log("RESETTING ...");
             occupiedNodes.removeAll(occupiedNodes);
@@ -180,10 +164,10 @@ public class Pilgrim extends RobotType {
 
     private void calcNewPathMap() {
         int[][] visibleRobotMap = robot.getVisibleRobotMap();
-        pathMap = new int[fullMap.length][fullMap.length];
-        for (int y = 0; y < fullMap.length; y++) {
-            for (int x = 0; x < fullMap.length; x++) {
-                if ((visibleRobotMap[y][x] == 0 || visibleRobotMap[y][x] == -1) && fullMap[y][x] != Util.NONE) {
+        pathMap = new int[getFullMap().length][getFullMap().length];
+        for (int y = 0; y < getFullMap().length; y++) {
+            for (int x = 0; x < getFullMap().length; x++) {
+                if ((visibleRobotMap[y][x] == 0 || visibleRobotMap[y][x] == -1) && getFullMap()[y][x] != Util.NONE) {
                     pathMap[y][x] = 1;
                 } else {
                     pathMap[y][x] = 0;
@@ -209,42 +193,4 @@ public class Pilgrim extends RobotType {
         return refineryPos;
     }
 
-    private Action build(BCAbstractRobot robot, int churchUnit, int dx, int dy) {
-        int x = robot.me.x + dx;
-        int y = robot.me.y + dy;
-        // do some validations here
-
-        // check if off the map
-        int[][] visibleMap = robot.getVisibleRobotMap();
-        if (visibleMap[y][x] != 0) {
-            return null;
-        } else if (x < 0 || y < 0) {
-            return null;
-        }
-
-        robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
-        return robot.buildUnit(Constants.CHURCH_UNIT, dx, dy);
-    }
-
-    private Action move(BCAbstractRobot robot, int dx, int dy) {
-        int newX = robot.me.x + dx;
-        int newY = robot.me.y + dy;
-
-        // do some validations here
-
-        //check if going of  the map
-        if (newX < 0 || newY < 0) {
-            robot.log("ONE OF THE GIVEN PARAMETERS WAS LESS THAN ZERO");
-            return null;
-        }
-
-        for (Robot visibleRobot : robot.getVisibleRobots()) {
-            if (visibleRobot.x == newX && visibleRobot.y == newY) {
-                robot.log("A ROBOT OCCUPIES THE SPACE THAT WE ARE TRYING TO GET TO.");
-                return null;
-            }
-        }
-
-        return robot.move(dx, dy);
-    }
 }

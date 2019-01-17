@@ -74,7 +74,7 @@ public class BCAbstractRobot {
     }
     public TradeAction proposeTrade(int k, int f) {
         if (me.unit != SPECS.CASTLE) throw new BCException("Only castles can trade.");
-        if (Math.abs(k) >= SPECS.MAX_TRADE || Math.abs(f) >= SPECS.MAX_TRADE) throw new BCException("Cannot trade over " + Integer.toString(SPECS.MAX_TRADE) + " in a given turn.");
+        if (Math.abs(k) >= SPECS.MAX_TRADE || Math.abs(f) >= SPECS.MAX_TRADE) throw new BCException("Cannot trade over " + Integer.toString(SPECS.MAX_TRADE) + " in a given takeTurn.");
         return new TradeAction(f, k, signal, signalRadius, logs, castleTalk);
     }
     public BuildAction buildUnit(int unit, int dx, int dy) {
