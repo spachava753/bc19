@@ -1,5 +1,7 @@
 package bc19;
 
+import bc19.lang.Override;
+
 public class Crusader extends RobotType {
 
     public Crusader(BCAbstractRobot robot) {
@@ -8,8 +10,7 @@ public class Crusader extends RobotType {
 
     @Override
     public void initialize(){
-        CrusaderConstants.MOVEMENT_SPEED = robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED;
-        CrusaderConstants.MAX_ATTACK_RANGE = robot.SPECS.UNITS[robot.SPECS.CRUSADER].ATTACK_RADIUS[1];
+        super.initialize();
     }
 
     @Override
@@ -30,40 +31,42 @@ public class Crusader extends RobotType {
         if (enemyRobot != null) {
             // see if we can attack him
             double distToEnemy = Util.findDistance(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
-            //robot.log("DISTANCE TO ENEMY IS " + distToEnemy);
-            if (distToEnemy > CrusaderConstants.MAX_ATTACK_RANGE) {
+            robot.log("DISTANCE TO ENEMY IS " + distToEnemy);
+            if (distToEnemy >= Math.sqrt(robot.SPECS.UNITS[robot.SPECS.CRUSADER].ATTACK_RADIUS[1])) {
                 // move toward the enemy
                 int newX = enemyRobot.x - robot.me.x;
                 int newY = enemyRobot.y - robot.me.y;
-                //robot.log("MOVING TOWARD THE ENEMY");
-                if (newX > CrusaderConstants.MOVEMENT_SPEED) {
-                    newX = CrusaderConstants.MOVEMENT_SPEED;
+                robot.log("MOVING TOWARD THE ENEMY");
+                if (newX > robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED) {
+                    newX = robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED;
                 }
 
-                if (newY > CrusaderConstants.MOVEMENT_SPEED) {
-                    newY = CrusaderConstants.MOVEMENT_SPEED;
+                if (newY > robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED) {
+                    newY = robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED;
                 }
 
                 int dx = newX;
                 int dy = newY;
 
-                //robot.log("dx: " + dx);
-                //robot.log("dy: " + dy);
+                robot.log("dx: " + dx);
+                robot.log("dy: " + dy);
 
                 action = move(dx, dy);
             } else {
                 //attack the enemy
-                //robot.log("ATTACKING THE ENEMY");
+                robot.log("ATTACKING THE ENEMY");
                 int dx = enemyRobot.x - robot.me.x;
                 int dy = enemyRobot.y - robot.me.y;
                 action = robot.attack(dx, dy);
             }
         } else {
             // move randomly
-            //robot.log("MOVING RANDOMLY ROBOT");
-            int[] goalDir;
-            goalDir = Util.getRandomDir();
-            action = move(goalDir[0], goalDir[1]);
+            robot.log("MOVING RANDOMLY");
+
+            action = tryAction(20, () -> {
+                int[] goalDir = Util.getRandomDir();
+                return move(goalDir[0], goalDir[1]);
+            });
         }
 
         return action;

@@ -1,7 +1,8 @@
 package bc19;
 
-import java.util.LinkedList;
-import java.util.List;
+import bc19.lang.Override;
+import bc19.util.LinkedList;
+import bc19.util.List;
 
 public class Pilgrim extends RobotType {
 
@@ -57,10 +58,10 @@ public class Pilgrim extends RobotType {
 
 
         // if we are full of resources, give it to a castle or church
-        if (robot.me.karbonite == PilgrimConstants.KARB_CARRYING_CAPACITY || robot.me.fuel == PilgrimConstants.FUEL_CARRYING_CAPACITY) {
+        if (robot.me.karbonite == robot.SPECS.UNITS[robot.SPECS.PILGRIM].KARBONITE_CAPACITY || robot.me.fuel == robot.SPECS.UNITS[robot.SPECS.PILGRIM].FUEL_CAPACITY) {
             robot.log("FULL OF RESOURCES");
             // each pilgrim that mines is responsible for building at least one church, to protect the resource
-            if (!builtRefinery && !refineryAvailable && (robot.karbonite > ChurchConstants.KARB_CONSTRUCTION_COST && robot.fuel > ChurchConstants.FUEL_CONSTRUCTION_COST)) {
+            if (!builtRefinery && !refineryAvailable && (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_FUEL)) {
                 // build a church somewhere
                 int[] randDir = Util.getRandomDir();
                 for (int i = 0; i < 8 || action == null; i++) {
@@ -116,8 +117,10 @@ public class Pilgrim extends RobotType {
 
                     goalNode = null;
 
-                    int[] randDir = Util.getRandomDir();
-                    action = move(randDir[0], randDir[1]);
+                    action = tryAction(20, () -> {
+                        int[] goalDir = Util.getRandomDir();
+                        return move(goalDir[0], goalDir[1]);
+                    });
                     //calcGoal();
                     //calcNewPathMap();
                 }

@@ -1,6 +1,7 @@
 package bc19;
 
-import java.util.List;
+import bc19.lang.Override;
+import bc19.util.List;
 
 public class Castle extends RobotType {
 
@@ -16,9 +17,8 @@ public class Castle extends RobotType {
     @Override
     public void initialize() {
         super.initialize();
-        CrusaderConstants.KARB_CONSTRUCTION_COST = robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE;
-        CrusaderConstants.FUEL_CONSTRUCTION_COST = robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL;
         numOfDeposits = getDeposits(getFullMap()).size();
+        robot.log("NUM OF DEPOSITS: " + numOfDeposits);
     }
 
 
@@ -57,7 +57,7 @@ public class Castle extends RobotType {
         // defensive measures
         if (enemyRobot != null) {
             //robot.log("FOUND AN ENEMY ROBOT");
-            if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
+            if (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
                 int[] goalDir = Util.getDir(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
                 action = build(Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
 
@@ -69,7 +69,7 @@ public class Castle extends RobotType {
             //robot.log("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
 
             for (int[] direction : tileDir) {
-                action = build(Constants.PILGRIM_UNIT, direction[0], direction[1]);
+                action = build(robot.SPECS.PILGRIM, direction[0], direction[1]);
                 if (action != null) {
                     pilgrimsBuilt++;
                     break;
@@ -79,8 +79,10 @@ public class Castle extends RobotType {
             if (buildNextPilgrim) {
                 // number of times to retry building
                 robot.log("BUILDING NEW PILGRIM");
-                int[] randDir = Util.getRandomDir();
-                action = tryAction(20, () -> build(Constants.PILGRIM_UNIT, randDir[0], randDir[1]));
+                action = tryAction(20, () -> {
+                    int[] randDir = Util.getRandomDir();
+                    return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
+                });
                 if (action != null) {
                     buildNextPilgrim = false;
                     pilgrimsBuilt++;
@@ -89,15 +91,17 @@ public class Castle extends RobotType {
         } else {
             if (crusadersBuilt > 20) {
                 action = null;
-            } else if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
-
-                int[] randDir = Util.getRandomDir();
-                action = tryAction(20, () -> build(Constants.CRUSADER_UNIT, randDir[0], randDir[1]));
+            } else if (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE) {
+                action = tryAction(20, () -> {
+                    int[] randDir = Util.getRandomDir();
+                    return build(robot.SPECS.CRUSADER, randDir[0], randDir[1]);
+                });
 
                 if (action == null) {
-                    //robot.log("COULDN'T BUILD CRUSADER");
-                } else
+                    robot.log("COULDN'T BUILD CRUSADER");
+                } else {
                     crusadersBuilt++;
+                }
             }
         }
 

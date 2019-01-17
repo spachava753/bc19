@@ -1,5 +1,7 @@
 package bc19;
 
+import bc19.lang.System;
+
 public class MyRobot extends BCAbstractRobot {
 
     private RobotType robotType = null;

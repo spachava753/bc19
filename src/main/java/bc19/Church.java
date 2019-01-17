@@ -1,5 +1,7 @@
 package bc19;
 
+import bc19.lang.Override;
+
 public class Church extends RobotType {
 
     public Church(BCAbstractRobot robot) {
@@ -23,7 +25,7 @@ public class Church extends RobotType {
 
         if (enemyRobotLoc != null) {
             // spam crusaders
-            if (robot.karbonite > CrusaderConstants.KARB_CONSTRUCTION_COST && robot.fuel > CrusaderConstants.FUEL_CONSTRUCTION_COST) {
+            if (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
                 int[] goalDir = Util.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
                 action = build(Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
 
