@@ -1,5 +1,7 @@
 package bc19;
 
+import java.util.Date;
+
 public final class Log {
 
 	public final static int V = 0;
@@ -19,7 +21,7 @@ public final class Log {
 	private static class SystemOutPrinter implements Printer {
 		private final static String[] LEVELS = new String[]{"V", "D", "I", "W", "E"};
 		public void print(int level, String tag, String msg) {
-			getRobot().log(LEVELS[level] + "/" + tag + ": " + msg);
+			robot.log(LEVELS[level] + "/" + tag + ": " + "[" + new Date().toString() + "] " + msg);
 		}
 	}
 
@@ -35,6 +37,7 @@ public final class Log {
 	public static void setRobot(BCAbstractRobot robot) {
 		Log.robot = robot;
 	}
+
 
 	public static synchronized Log useTags(String[] tags) {
 		mUseTags = tags;
@@ -74,4 +77,5 @@ public final class Log {
 
 		SYSTEM.print(level, mUseTags.toString(), String.valueOf(msg));
 	}
+
 }
