@@ -1,8 +1,4 @@
-package com.github.oxo42.stateless4j;
-
-import com.github.oxo42.stateless4j.delegates.Func2;
-import com.github.oxo42.stateless4j.transitions.TransitioningTriggerBehaviour;
-import com.github.oxo42.stateless4j.triggers.*;
+package bc19;
 
 import java.io.IOException;
 import java.io.OutputStream;

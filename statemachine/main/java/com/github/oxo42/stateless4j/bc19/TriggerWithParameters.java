@@ -1,6 +1,6 @@
-package com.github.oxo42.stateless4j.triggers;
+package bc19;
 
-import com.github.oxo42.stateless4j.conversion.ParameterConversion;
+import bc19.ParameterConversion;
 
 
 public abstract class TriggerWithParameters<TTrigger> {

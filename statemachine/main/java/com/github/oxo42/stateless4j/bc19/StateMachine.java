@@ -1,13 +1,4 @@
-package com.github.oxo42.stateless4j;
-
-import com.github.oxo42.stateless4j.delegates.Action1;
-import com.github.oxo42.stateless4j.delegates.Action2;
-import com.github.oxo42.stateless4j.delegates.Action3;
-import com.github.oxo42.stateless4j.delegates.Func;
-import com.github.oxo42.stateless4j.transitions.Transition;
-import com.github.oxo42.stateless4j.triggers.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package bc19;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +14,11 @@ public class StateMachine<S, T> {
     public static final String TRIGGER_IS_NULL = "trigger is null";
     protected final StateMachineConfig<S, T> config;
     protected final Func<S> stateAccessor;
-    protected final Action1<S> stateMutator;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final StateAction1<S> stateMutator;
+    //private final Logger logger = LoggerFactory.getLogger(getClass());
     private boolean shouldLog = true;
 
-    protected Action3<S, T, Object[]> unhandledTriggerAction = new Action3<S, T, Object[]>() {
+    protected StateAction3<S, T, Object[]> unhandledTriggerAction = new StateAction3<S, T, Object[]>() {
         @Override
         public void doIt(S state, T trigger, Object[] args) {
             throw new IllegalStateException(
@@ -64,7 +55,7 @@ public class StateMachine<S, T> {
                 return reference.getState();
             }
         };
-        stateMutator = new Action1<S>() {
+        stateMutator = new StateAction1<S>() {
             @Override
             public void doIt(S s) {
                 reference.setState(s);
@@ -83,7 +74,7 @@ public class StateMachine<S, T> {
      * @param stateAccessor State accessor
      * @param stateMutator  State mutator
      */
-    public StateMachine(S initialState, Func<S> stateAccessor, Action1<S> stateMutator, StateMachineConfig<S, T> config) {
+    public StateMachine(S initialState, Func<S> stateAccessor, StateAction1<S> stateMutator, StateMachineConfig<S, T> config) {
         this.config = config;
         this.stateAccessor = stateAccessor;
         this.stateMutator = stateMutator;
@@ -119,12 +110,8 @@ public class StateMachine<S, T> {
         shouldLog = enabled;
     }
     
-    public Logger getLogger() {
-        return logger;
-    }
-    
     protected void log(T trigger, Object... args) {
-        getLogger().info("Firing " + trigger, args);
+        Log.i("Firing " + trigger, args);
     }
     
     /**
@@ -230,8 +217,8 @@ public class StateMachine<S, T> {
             triggerBehaviour.performAction(args);
             setState(destination);
             getCurrentRepresentation().enter(transition, args);
-            if (shouldLog && logger.isDebugEnabled()) {
-                getLogger().debug("Fired [{}]--{}-->[{}]",
+            if (shouldLog) {
+                Log.d("Fired [{}]--{}-->[{}]",
                         source,
                         TriggerWithParameters.toString(trigger, args),
                         destination.toString());
@@ -244,11 +231,11 @@ public class StateMachine<S, T> {
      *
      * @param unhandledTriggerAction An action to call when an unhandled trigger is fired
      */
-    public void onUnhandledTrigger(final Action2<S, T> unhandledTriggerAction) {
+    public void onUnhandledTrigger(final StateAction2<S, T> unhandledTriggerAction) {
         if (unhandledTriggerAction == null) {
             throw new IllegalStateException("unhandledTriggerAction");
         }
-        this.unhandledTriggerAction = new Action3<S, T, Object[]>() {
+        this.unhandledTriggerAction = new StateAction3<S, T, Object[]>() {
             @Override
             public void doIt(S state, T trigger, Object[] arg3) {
                 unhandledTriggerAction.doIt(state, trigger);
@@ -261,7 +248,7 @@ public class StateMachine<S, T> {
      *
      * @param unhandledTriggerAction An action to call with state, trigger and params when an unhandled trigger is fired
      */
-    public void onUnhandledTrigger(Action3<S, T, Object[]> unhandledTriggerAction) {
+    public void onUnhandledTrigger(StateAction3<S, T, Object[]> unhandledTriggerAction) {
         if (unhandledTriggerAction == null) {
             throw new IllegalStateException("unhandledTriggerAction");
         }

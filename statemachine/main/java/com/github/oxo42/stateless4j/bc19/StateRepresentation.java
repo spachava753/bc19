@@ -1,9 +1,4 @@
-package com.github.oxo42.stateless4j;
-
-import com.github.oxo42.stateless4j.delegates.Action1;
-import com.github.oxo42.stateless4j.delegates.Action2;
-import com.github.oxo42.stateless4j.transitions.Transition;
-import com.github.oxo42.stateless4j.triggers.TriggerBehaviour;
+package bc19;
 
 import java.util.*;
 
@@ -14,8 +9,8 @@ public class StateRepresentation<S, T> {
     private final S state;
 
     private final Map<T, List<TriggerBehaviour<S, T>>> triggerBehaviours = new HashMap<>();
-    private final List<Action2<Transition<S, T>, Object[]>> entryActions = new ArrayList<>();
-    private final List<Action1<Transition<S, T>>> exitActions = new ArrayList<>();
+    private final List<StateAction2<Transition<S, T>, Object[]>> entryActions = new ArrayList<>();
+    private final List<StateAction1<Transition<S, T>>> exitActions = new ArrayList<>();
     private final List<StateRepresentation<S, T>> substates = new ArrayList<>();
     private StateRepresentation<S, T> superstate; // null
 
@@ -59,10 +54,10 @@ public class StateRepresentation<S, T> {
         return actual.isEmpty() ? null : actual.get(0);
     }
 
-    public void addEntryAction(final T trigger, final Action2<Transition<S, T>, Object[]> action) {
+    public void addEntryAction(final T trigger, final StateAction2<Transition<S, T>, Object[]> action) {
         assert action != null : ACTION_IS_NULL;
 
-        entryActions.add(new Action2<Transition<S, T>, Object[]>() {
+        entryActions.add(new StateAction2<Transition<S, T>, Object[]>() {
             @Override
             public void doIt(Transition<S, T> t, Object[] args) {
                 T trans_trigger = t.getTrigger();
@@ -73,17 +68,17 @@ public class StateRepresentation<S, T> {
         });
     }
 
-    public void addEntryAction(Action2<Transition<S, T>, Object[]> action) {
+    public void addEntryAction(StateAction2<Transition<S, T>, Object[]> action) {
         assert action != null : ACTION_IS_NULL;
         entryActions.add(action);
     }
 
-    public void insertEntryAction(Action2<Transition<S, T>, Object[]> action) {
+    public void insertEntryAction(StateAction2<Transition<S, T>, Object[]> action) {
         assert action != null : ACTION_IS_NULL;
         entryActions.add(0, action);
     }
 
-    public void addExitAction(Action1<Transition<S, T>> action) {
+    public void addExitAction(StateAction1<Transition<S, T>> action) {
         assert action != null : ACTION_IS_NULL;
         exitActions.add(action);
     }
@@ -118,14 +113,14 @@ public class StateRepresentation<S, T> {
     void executeEntryActions(Transition<S, T> transition, Object[] entryArgs) {
         assert transition != null : TRANSITION_IS_NULL;
         assert entryArgs != null : "entryArgs is null";
-        for (Action2<Transition<S, T>, Object[]> action : entryActions) {
+        for (StateAction2<Transition<S, T>, Object[]> action : entryActions) {
             action.doIt(transition, entryArgs);
         }
     }
 
     void executeExitActions(Transition<S, T> transition) {
         assert transition != null : TRANSITION_IS_NULL;
-        for (Action1<Transition<S, T>> action : exitActions) {
+        for (StateAction1<Transition<S, T>> action : exitActions) {
             action.doIt(transition);
         }
     }

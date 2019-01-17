@@ -1,4 +1,4 @@
-package com.github.oxo42.stateless4j.triggers;
+package bc19;
 
 public class TriggerWithParameters3<TArg0, TArg1, TArg2, TTrigger> extends TriggerWithParameters<TTrigger> {
 

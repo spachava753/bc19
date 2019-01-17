@@ -1,19 +1,19 @@
-package com.github.oxo42.stateless4j.triggers;
+package bc19;
 
-import com.github.oxo42.stateless4j.delegates.Action;
-import com.github.oxo42.stateless4j.delegates.FuncBoolean;
+import bc19.FuncBoolean;
+import bc19.StateAction;
 
 public class InternalTriggerBehaviour<S, T> extends TriggerBehaviour<S, T> {
-    private final Action action;
+    private final StateAction stateAction;
 
-    public InternalTriggerBehaviour(T trigger, FuncBoolean guard, Action action) {
+    public InternalTriggerBehaviour(T trigger, FuncBoolean guard, StateAction stateAction) {
         super(trigger, guard);
-        this.action = action;
+        this.stateAction = stateAction;
     }
     
     @Override
     public void performAction(Object[] args) {
-        action.doIt();
+        stateAction.doIt();
     }
 
     @Override

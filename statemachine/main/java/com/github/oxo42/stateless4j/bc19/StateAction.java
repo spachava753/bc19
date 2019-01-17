@@ -1,9 +1,9 @@
-package com.github.oxo42.stateless4j.delegates;
+package bc19;
 
 /**
  * Represents an operation that accepts no input arguments and returns no result.
  */
-public interface Action {
+public interface StateAction {
 
     /**
      * Performs this operation

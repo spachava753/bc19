@@ -1,4 +1,4 @@
-package com.github.oxo42.stateless4j.delegates;
+package bc19;
 
 public interface FuncBoolean {
 

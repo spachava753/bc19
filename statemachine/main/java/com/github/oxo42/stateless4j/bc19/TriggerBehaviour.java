@@ -1,6 +1,6 @@
-package com.github.oxo42.stateless4j.triggers;
+package bc19;
 
-import com.github.oxo42.stateless4j.delegates.FuncBoolean;
+import bc19.FuncBoolean;
 
 public abstract class TriggerBehaviour<S, T> {
 

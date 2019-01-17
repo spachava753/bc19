@@ -1,4 +1,4 @@
-package com.github.oxo42.stateless4j.delegates;
+package bc19;
 
 /**
  * Represents an operation that accepts an input and returns no result
@@ -8,7 +8,7 @@ package com.github.oxo42.stateless4j.delegates;
  * @param <T2> The type of the input to the operation
  * @param <T3> The type of the input to the operation
  */
-public interface Action4<T, T1, T2, T3> {
+public interface StateAction4<T, T1, T2, T3> {
 
     /**
      * Performs this operation on the given input

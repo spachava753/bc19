@@ -1,4 +1,4 @@
-package com.github.oxo42.stateless4j.delegates;
+package bc19;
 
 /**
  * Represents a function that accepts no input and produces a result

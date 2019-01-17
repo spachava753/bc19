@@ -1,15 +1,15 @@
-package com.github.oxo42.stateless4j.triggers;
+package bc19;
 
-import com.github.oxo42.stateless4j.delegates.Action1;
-import com.github.oxo42.stateless4j.delegates.Func2;
-import com.github.oxo42.stateless4j.delegates.FuncBoolean;
+import bc19.Func2;
+import bc19.FuncBoolean;
+import bc19.StateAction1;
 
 public class DynamicTriggerBehaviour<S, T> extends TriggerBehaviour<S, T> {
 
     private final Func2<Object[], S> destination;
-    private final Action1<Object[]> action;
+    private final StateAction1<Object[]> action;
 
-    public DynamicTriggerBehaviour(T trigger, Func2<Object[], S> destination, FuncBoolean guard, Action1<Object[]> action) {
+    public DynamicTriggerBehaviour(T trigger, Func2<Object[], S> destination, FuncBoolean guard, StateAction1<Object[]> action) {
         super(trigger, guard);
         assert destination != null : "destination is null";
         this.destination = destination;

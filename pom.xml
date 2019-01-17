@@ -105,9 +105,9 @@
 											<goal>jsweet</goal>
 										</goals>
 									</pluginExecutionFilter>
-									<action>
+									<stateAction>
 										<ignore></ignore>
-									</action>
+									</stateAction>
 								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>

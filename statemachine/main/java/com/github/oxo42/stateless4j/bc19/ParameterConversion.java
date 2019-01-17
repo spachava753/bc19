@@ -1,4 +1,4 @@
-package com.github.oxo42.stateless4j.conversion;
+package bc19;
 
 public final class ParameterConversion {
 
