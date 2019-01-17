@@ -72,32 +72,32 @@ public abstract class RobotType {
     }
 
     public static List<Node> getAdjacentTilesWithDeposits(BCAbstractRobot robot, int[][] fullMap) {
-        //robot.log("inside Util.getAdjacentTilesWithDeposits()");
+        //Log.i("inside Util.getAdjacentTilesWithDeposits()");
         List<Node> depositTileDirections = new ArrayList<>();
         for (int[] direction : Util.DIRECTIONS) {
             int checkX = robot.me.x + direction[0];
             int checkY = robot.me.y + direction[1];
-            //robot.log("checkX is " + checkX);
-            //robot.log("checkY is " + checkY);
+            //Log.i("checkX is " + checkX);
+            //Log.i("checkY is " + checkY);
             // check to make sure that the value doesn't exceed the boundaries of the map
             if (checkY < 0 || checkX < 0) {
                 // don't check a direction outside of the boundary
-                //robot.log("can't check a direction outside of boundary -> continuing");
+                //Log.i("can't check a direction outside of boundary -> continuing");
                 continue;
             }
             switch (fullMap[checkY][checkX]) {
                 case Util.FUEL:
                 case Util.KARBONITE:
-                    //robot.log("found a karbonite deposit");
+                    //Log.i("found a karbonite deposit");
                     depositTileDirections.add(new Node(direction[0], direction[1]));
                     break;
                 default:
-                    //robot.log("did not find a deposit");
+                    //Log.i("did not find a deposit");
                     break;
             }
         }
 
-        //robot.log("found a total of " + depositTileDirections.size() + " in the adjacent tiles");
+        //Log.i("found a total of " + depositTileDirections.size() + " in the adjacent tiles");
 
         return depositTileDirections;
     }
@@ -166,7 +166,7 @@ public abstract class RobotType {
                 // do some validations here
 
                 if (checkIfSpaceIsPassable(node) && !checkIfSpaceIsOccupied(node)) {
-                    robot.log("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
+                    Log.i("BUILDING A UNIT WITH COORDINATES (" + x + ", " + y + ")");
                     result = robot.buildUnit(unit, dx, dy);
                 }
 
@@ -220,7 +220,7 @@ public abstract class RobotType {
     public boolean checkIfSpaceIsOccupied(Node node) {
         for (Robot visibleRobot : robot.getVisibleRobots()) {
             if (visibleRobot.x == node.x && visibleRobot.y == node.y) {
-                robot.log("A ROBOT OCCUPIES THE SPACE THAT WE ARE TRYING TO USE.");
+                Log.i("A ROBOT OCCUPIES THE SPACE THAT WE ARE TRYING TO USE.");
                 return true;
             }
         }

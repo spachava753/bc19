@@ -36,7 +36,7 @@ public class Pilgrim extends RobotType {
 
         // decide where we need to go, if we need to go somewhere
         if ((goalNode == null) || (robot.getVisibleRobotMap()[goalNode.y][goalNode.x] != 0 && robot.getVisibleRobotMap()[goalNode.y][goalNode.x] != -1)) {
-            robot.log("DECIDING PILGRIM GOAL");
+            Log.i("DECIDING PILGRIM GOAL");
             // if the previous goal is not null make sure that we add it to the occupied node list
             if (goalNode != null)
                 occupiedNodes.add(goalNode);
@@ -44,9 +44,9 @@ public class Pilgrim extends RobotType {
             calcNewPathMap();
             calcGoal();
         } else {
-            robot.log("GOAL NODE HAS ALREADY BEEN DEFINED");
-            robot.log("GOAL NODE X: " + goalNode.x);
-            robot.log("GOAL NODE Y: " + goalNode.y);
+            Log.i("GOAL NODE HAS ALREADY BEEN DEFINED");
+            Log.i("GOAL NODE X: " + goalNode.x);
+            Log.i("GOAL NODE Y: " + goalNode.y);
 
         }
     }
@@ -58,7 +58,7 @@ public class Pilgrim extends RobotType {
 
         // if we are full of resources, give it to a castle or church
         if (robot.me.karbonite == robot.SPECS.UNITS[robot.SPECS.PILGRIM].KARBONITE_CAPACITY || robot.me.fuel == robot.SPECS.UNITS[robot.SPECS.PILGRIM].FUEL_CAPACITY) {
-            robot.log("FULL OF RESOURCES");
+            Log.i("FULL OF RESOURCES");
             // each pilgrim that mines is responsible for building at least one church, to protect the resource
             if (!builtRefinery && !refineryAvailable && (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_FUEL)) {
                 // build a church somewhere
@@ -69,7 +69,7 @@ public class Pilgrim extends RobotType {
                 }
 
                 if (action != null) {
-                    robot.log("BUILDING A NEW CHURCH");
+                    Log.i("BUILDING A NEW CHURCH");
                     builtRefinery = true;
                 }
             }
@@ -79,8 +79,8 @@ public class Pilgrim extends RobotType {
                 int dy = refinery[1] - robot.me.y;
                 action = robot.give(dx, dy, robot.me.karbonite, robot.me.fuel);
             } else {
-                robot.log("refinery is null");
-                robot.log("DISCOVERING NEW REFINERIES");
+                Log.i("refinery is null");
+                Log.i("DISCOVERING NEW REFINERIES");
                 if (discoverRefineries() != null) {
                     refinery = discoverRefineries();
                     refineryAvailable = true;
@@ -95,21 +95,21 @@ public class Pilgrim extends RobotType {
                 refineryAvailable = true;
 
             if (action == null) {
-                robot.log("MINING RESOURCES");
+                Log.i("MINING RESOURCES");
                 action = robot.mine();
             }
         } else {
-            robot.log("MOVING TOWARD ANOTHER DEPOSIT");
+            Log.i("MOVING TOWARD ANOTHER DEPOSIT");
             if (pathNodes != null) {
-                robot.log("NODES PATH SIZE: " + pathNodes.size());
+                Log.i("NODES PATH SIZE: " + pathNodes.size());
                 Node nextNode = pathNodes.get(0);
                 int[] dir = Util.getDir(robot.me.x, robot.me.y, nextNode.x, nextNode.y);
                 action = move(dir[0], dir[1]);
                 if (action != null) {
                     pathNodes.remove(0);
                 } else {
-                    robot.log("MOVE ACTION WAS NULL");
-                    robot.log("CALCULATING NEW PATH");
+                    Log.i("MOVE ACTION WAS NULL");
+                    Log.i("CALCULATING NEW PATH");
                     // if the previous goal is not null make sure that we add it to the occupied node list
                     if (goalNode != null && !occupiedNodes.contains(goalNode))
                         occupiedNodes.add(goalNode);
@@ -124,7 +124,7 @@ public class Pilgrim extends RobotType {
                     //calcNewPathMap();
                 }
             } else {
-                robot.log("NODES PATH IS NULL");
+                Log.i("NODES PATH IS NULL");
             }
         }
 
@@ -132,7 +132,7 @@ public class Pilgrim extends RobotType {
     }
 
     private void calcGoal() {
-        robot.log("CALC NEW GOAL");
+        Log.i("CALC NEW GOAL");
         // set a new goal
 
         Node minDistNode = null;
@@ -154,12 +154,12 @@ public class Pilgrim extends RobotType {
         if (minDistNode != null) {
             goalNode = minDistNode;
             pf = new PathFinder(pathMap, goalNode, robot);
-            robot.log("CREATING A NEW PATH");
+            Log.i("CREATING A NEW PATH");
             pathNodes = pf.compute(new Node(robot.me.x, robot.me.y));
-            robot.log("PATH NODES: " + pathNodes);
+            Log.i("PATH NODES: " + pathNodes);
         } else {
-            robot.log("ALL DEPOSITS ARE OCCUPIED");
-            robot.log("RESETTING ...");
+            Log.i("ALL DEPOSITS ARE OCCUPIED");
+            Log.i("RESETTING ...");
             occupiedNodes.removeAll(occupiedNodes);
         }
     }

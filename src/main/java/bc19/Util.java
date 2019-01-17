@@ -35,35 +35,35 @@ public final class Util {
     }
 
     public static List<int[]> getAdjacentTilesWithDeposits(BCAbstractRobot robot, int[][] fullMap) {
-        //robot.log("inside Util.getAdjacentTilesWithDeposits()");
+        //Log.i("inside Util.getAdjacentTilesWithDeposits()");
         List<int[]> depositTileDirections = new ArrayList<>();
         for (int[] direction : DIRECTIONS) {
             int checkX = robot.me.x + direction[0];
             int checkY = robot.me.y + direction[1];
-            //robot.log("checkX is " + checkX);
-            //robot.log("checkY is " + checkY);
+            //Log.i("checkX is " + checkX);
+            //Log.i("checkY is " + checkY);
             // check to make sure that the value doesn't exceed the boundaries of the map
             if (checkY < 0 || checkX < 0) {
                 // don't check a direction outside of the boundary
-                //robot.log("can't check a direction outside of boundary -> continuing");
+                //Log.i("can't check a direction outside of boundary -> continuing");
                 continue;
             }
             switch (fullMap[checkY][checkX]) {
                 case KARBONITE:
-                    //robot.log("found a karbonite deposit");
+                    //Log.i("found a karbonite deposit");
                     depositTileDirections.add(direction);
                     break;
                 case FUEL:
-                    //robot.log("found a fuel deposit");
+                    //Log.i("found a fuel deposit");
                     depositTileDirections.add(direction);
                     break;
                 default:
-                    //robot.log("did not find a deposit");
+                    //Log.i("did not find a deposit");
                     break;
             }
         }
 
-        //robot.log("found a total of " + depositTileDirections.size() + " in the adjacent tiles");
+        //Log.i("found a total of " + depositTileDirections.size() + " in the adjacent tiles");
 
         return depositTileDirections;
     }
@@ -127,6 +127,6 @@ public final class Util {
     }
 
     public static void log(String msg){
-        robot.log(msg);
+        Log.i(msg);
     }
 }

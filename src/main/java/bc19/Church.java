@@ -9,7 +9,7 @@ public class Church extends RobotType {
     @Override
     public Action takeTurn() {
         Action action = null;
-        robot.log("INSIDE CHURCH TURN METHOD");
+        Log.i("INSIDE CHURCH TURN METHOD");
 
         // check if enemies have been spotted
         int[] enemyRobotLoc = null;
@@ -28,7 +28,7 @@ public class Church extends RobotType {
                 action = build(Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
 
                 if (action == null)
-                    robot.log("COULDN'T BUILD CRUSADER");
+                    Log.i("COULDN'T BUILD CRUSADER");
             }
         }
 

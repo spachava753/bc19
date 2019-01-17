@@ -12,23 +12,23 @@ public class MyRobot extends BCAbstractRobot {
         int unit_type = me.unit;
         switch (unit_type) {
             case Constants.CASTLE_UNIT:
-                log("INSIDE TURN " + me.turn);
-                log("UNIT TYPE: Castle");
+                Log.i("INSIDE TURN " + me.turn);
+                Log.i("UNIT TYPE: Castle");
                 break;
             case Constants.CHURCH_UNIT:
-                log("UNIT TYPE: Church");
+                Log.i("UNIT TYPE: Church");
                 break;
             case Constants.PILGRIM_UNIT:
-                log("UNIT TYPE: Pilgrim");
+                Log.i("UNIT TYPE: Pilgrim");
                 break;
             case Constants.CRUSADER_UNIT:
-                log("UNIT TYPE: Crusader");
+                Log.i("UNIT TYPE: Crusader");
                 break;
             case Constants.PROPHET_UNIT:
-                log("UNIT TYPE: Prophet");
+                Log.i("UNIT TYPE: Prophet");
                 break;
             case Constants.PREACHER_UNIT:
-                log("UNIT TYPE: Preacher");
+                Log.i("UNIT TYPE: Preacher");
                 break;
             default:
                 return null;
@@ -58,10 +58,10 @@ public class MyRobot extends BCAbstractRobot {
         }
 
         Action action = robotType.turn();
-        log("Execution time: " + String.valueOf(System.currentTimeMillis() - currentTime));
-        log("GLOBAL KARB: " + robotType.robot.karbonite);
-        log("GLOBAL FUEL: " + robotType.robot.fuel);
-        log("-------------------- END TURN -----------------------");
+        Log.i("Execution time: " + String.valueOf(System.currentTimeMillis() - currentTime));
+        Log.i("GLOBAL KARB: " + robotType.robot.karbonite);
+        Log.i("GLOBAL FUEL: " + robotType.robot.fuel);
+        Log.i("-------------------- END TURN -----------------------");
         return action;
     }
 

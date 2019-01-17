@@ -17,7 +17,7 @@ public class Castle extends RobotType {
     public void initialize() {
         super.initialize();
         numOfDeposits = getDeposits(getFullMap()).size();
-        robot.log("NUM OF DEPOSITS: " + numOfDeposits);
+        Log.i("NUM OF DEPOSITS: " + numOfDeposits);
     }
 
 
@@ -55,17 +55,17 @@ public class Castle extends RobotType {
 
         // defensive measures
         if (enemyRobot != null) {
-            //robot.log("FOUND AN ENEMY ROBOT");
+            //Log.i("FOUND AN ENEMY ROBOT");
             if (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
                 int[] goalDir = Util.getDir(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
                 action = build(Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
 
                 if (action == null) {
-                    //robot.log("COULDN'T BUILD CRUSADER");
+                    //Log.i("COULDN'T BUILD CRUSADER");
                 }
             }
         } else if (!tileDir.isEmpty() && (tileDir.size() > pilgrimsBuilt)) {
-            //robot.log("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
+            //Log.i("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
 
             for (int[] direction : tileDir) {
                 action = build(robot.SPECS.PILGRIM, direction[0], direction[1]);
@@ -77,7 +77,7 @@ public class Castle extends RobotType {
         } else if (numOfDeposits > pilgrimsBuilt) {
             if (buildNextPilgrim) {
                 // number of times to retry building
-                robot.log("BUILDING NEW PILGRIM");
+                Log.i("BUILDING NEW PILGRIM");
                 action = tryAction(20, () -> {
                     int[] randDir = Util.getRandomDir();
                     return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
@@ -97,7 +97,7 @@ public class Castle extends RobotType {
                 });
 
                 if (action == null) {
-                    robot.log("COULDN'T BUILD CRUSADER");
+                    Log.i("COULDN'T BUILD CRUSADER");
                 } else {
                     crusadersBuilt++;
                 }
