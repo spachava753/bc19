@@ -18,27 +18,6 @@ public class Church extends RobotType {
     @Override
     public void initialize() {
         super.initialize();
-        StateMachineConfig<State, Trigger> phoneCallConfig = new StateMachineConfig<>();
-
-        phoneCallConfig.configure(State.OffHook)
-                .permit(Trigger.CallDialed, State.Ringing);
-
-        phoneCallConfig.configure(State.Ringing)
-                .permit(Trigger.HungUp, State.OffHook)
-                .permit(Trigger.CallConnected, State.Connected);
-
-        phoneCallConfig.configure(State.Connected)
-                .onEntry(this::takeTurn)
-                .onExit(this::takeTurn)
-                .permit(Trigger.LeftMessage, State.OffHook)
-                .permit(Trigger.HungUp, State.OffHook)
-                .permit(Trigger.PlacedOnHold, State.OnHold);
-
-        // ...
-
-        StateMachine<State, Trigger> phoneCall = new StateMachine<>(State.OffHook, phoneCallConfig);
-
-        phoneCall.fire(Trigger.CallDialed);
     }
 
     @Override
