@@ -57,7 +57,7 @@ public class Pilgrim extends RobotType {
 
 
         // if we are full of resources, give it to a castle or church
-        if (robot.me.karbonite == robot.SPECS.UNITS[robot.SPECS.PILGRIM].KARBONITE_CAPACITY || robot.me.fuel == robot.SPECS.UNITS[robot.SPECS.PILGRIM].FUEL_CAPACITY) {
+        if (robot.me.karbonite == robot.SPECS.UNITS[robot.SPECS.PILGRIM].KARBONITE_CAPACITY/2 || robot.me.fuel == robot.SPECS.UNITS[robot.SPECS.PILGRIM].FUEL_CAPACITY/2) {
             Log.i("FULL OF RESOURCES");
             // each pilgrim that mines is responsible for building at least one church, to protect the resource
             if (!builtRefinery && !refineryAvailable && (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_FUEL)) {
