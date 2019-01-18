@@ -49,6 +49,8 @@ public class Pilgrim extends RobotType {
             Log.i("GOAL NODE Y: " + goalNode.y);
 
         }
+
+        Log.i("REFINERY POS: " + refinery[0] + ", " + refinery[1]);
     }
 
     @Override
@@ -62,15 +64,21 @@ public class Pilgrim extends RobotType {
             // each pilgrim that mines is responsible for building at least one church, to protect the resource
             if (!builtRefinery && !refineryAvailable && (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_FUEL)) {
                 // build a church somewhere
-                int[] randDir = Util.getRandomDir();
-                for (int i = 0; i < 8 || action == null; i++) {
-                    randDir = Util.getRandomDir();
-                    action = build(Constants.CHURCH_UNIT, randDir[0], randDir[1]);
-                }
+                action = tryAction(20, () -> {
+                    int[] randDir = Util.getRandomDir();
+                    return build(Constants.CHURCH_UNIT, randDir[0], randDir[1]);
+                });
 
                 if (action != null) {
-                    Log.i("BUILDING A NEW CHURCH");
-                    builtRefinery = true;
+                    BuildAction buildAction = (BuildAction) action;
+                    Node buildingLoc = new Node(robot.me.x+buildAction.dx, robot.me.y+buildAction.dy);
+                    if(!deposits.contains(buildingLoc)){
+                        Log.i("BUILDING A NEW CHURCH");
+                        builtRefinery = true;
+                    } else {
+                        Log.i("BUILDING A NEW CHURCH ON A DEPOSIT. RESETTING ACTION...");
+                        action = null;
+                    }
                 }
             }
 
@@ -100,7 +108,7 @@ public class Pilgrim extends RobotType {
             }
         } else {
             Log.i("MOVING TOWARD ANOTHER DEPOSIT");
-            if (pathNodes != null) {
+            if (pathNodes != null && pathNodes.size() > 0) {
                 Log.i("NODES PATH SIZE: " + pathNodes.size());
                 Node nextNode = pathNodes.get(0);
                 int[] dir = Util.getDir(robot.me.x, robot.me.y, nextNode.x, nextNode.y);
@@ -125,6 +133,15 @@ public class Pilgrim extends RobotType {
                 }
             } else {
                 Log.i("NODES PATH IS NULL");
+                action = tryAction(20, () -> {
+                    int[] goalDir = Util.getRandomDir();
+                    return move(goalDir[0], goalDir[1]);
+                });
+
+                if (goalNode != null && !occupiedNodes.contains(goalNode))
+                    occupiedNodes.add(goalNode);
+
+                goalNode = null;
             }
         }
 

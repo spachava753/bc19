@@ -17,9 +17,14 @@ public class Castle extends RobotType {
     public void initialize() {
         super.initialize();
         numOfDeposits = getDeposits(getFullMap()).size();
-        Log.i("NUM OF DEPOSITS: " + numOfDeposits);
+        Log.i("NUM OF DEPOSITS: ", numOfDeposits);
     }
 
+    @Override
+    public void initTakeTurn() {
+        super.initTakeTurn();
+        Log.i("PILGRIMS BUILT: " + pilgrimsBuilt);
+    }
 
     @Override
     public Action takeTurn() {

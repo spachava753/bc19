@@ -2,15 +2,6 @@ package bc19;
 
 public class Church extends RobotType {
 
-    private enum State {
-        Ringing, Connected, OnHold, OffHook
-
-    }
-    private enum Trigger {
-        CallDialed, CallConnected, PlacedOnHold, LeftMessage, HungUp
-
-    }
-
     public Church(BCAbstractRobot robot) {
         super(robot);
     }
