@@ -29,22 +29,26 @@ public class Crusader extends RobotType {
         if (enemyRobot != null) {
             // see if we can attack him
             double distToEnemy = RobotUtil.findDistance(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
-            Log.i("DISTANCE TO ENEMY IS " + distToEnemy);
+            Log.d("DISTANCE TO ENEMY IS " + distToEnemy);
+            Log.d("ATTACK RADIUS ARRAY " + robot.SPECS.UNITS[robot.SPECS.CRUSADER].ATTACK_RADIUS);
+            Log.d("ATTACK RADIUS " + robot.SPECS.UNITS[robot.SPECS.CRUSADER].ATTACK_RADIUS[1]);
+            Log.d("ATTACK RADIUS SQRT " + Math.sqrt(robot.SPECS.UNITS[robot.SPECS.CRUSADER].ATTACK_RADIUS[1]));
             if (distToEnemy >= Math.sqrt(robot.SPECS.UNITS[robot.SPECS.CRUSADER].ATTACK_RADIUS[1])) {
                 // move toward the enemy
-                int newX = enemyRobot.x - robot.me.x;
-                int newY = enemyRobot.y - robot.me.y;
+                int dx = enemyRobot.x - robot.me.x;
+                int dy = enemyRobot.y - robot.me.y;
+
+                dx = (int) (dx - Math.signum(dx)*1);
+                dy = (int) (dy - Math.signum(dy)*1);
+
                 Log.i("MOVING TOWARD THE ENEMY");
-                if (newX > robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED) {
-                    newX = robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED;
+                if (Math.abs(dx) > Math.sqrt(robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED)) {
+                    dx = (int) (Math.floor(Math.sqrt(robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED)) * Math.signum(dx));
                 }
 
-                if (newY > robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED) {
-                    newY = robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED;
+                if (Math.abs(dy) > Math.sqrt(robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED)) {
+                    dy = (int) (Math.floor(Math.sqrt(robot.SPECS.UNITS[robot.SPECS.CRUSADER].SPEED)) * Math.signum(dy));
                 }
-
-                int dx = newX;
-                int dy = newY;
 
                 Log.i("dx: " + dx);
                 Log.i("dy: " + dy);
