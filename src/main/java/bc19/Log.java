@@ -65,6 +65,7 @@ public final class Log {
 		log(W, msg, args);
 		return null;
 	}
+
 	public static synchronized Log e(Object msg, Object... args) {
 		log(E, msg, args);
 		return null;
@@ -75,7 +76,13 @@ public final class Log {
 			return;
 		}
 
-		SYSTEM.print(level, mUseTags.toString(), String.valueOf(msg));
+		String message = String.valueOf(msg);
+
+		for(Object arg: args) {
+			message += String.valueOf(arg) + " ";
+		}
+
+		SYSTEM.print(level, mUseTags.toString(), message);
 	}
 
 }

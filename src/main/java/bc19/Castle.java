@@ -1,12 +1,18 @@
 package bc19;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Castle extends RobotType {
 
     private int pilgrimsBuilt;
     private int crusadersBuilt;
     private int numOfDeposits;
+
+    private FiniteStateMachine castleStateMachine;
+    private int[] enemyRobotLoc = null;
+    private Action action;
 
     public Castle(BCAbstractRobot robot) {
         super(robot);
@@ -15,20 +21,133 @@ public class Castle extends RobotType {
     @Override
     public void initialize() {
         super.initialize();
-        numOfDeposits = getDeposits(getFullMap()).size()/2;
+        setminKarbStockpile(40);
+        numOfDeposits = getDeposits(getFullMap()).size() / 2;
+
+        State idle = new State("idle");
+        State defenseMode = new State("defenseMode");
+        State buildMode = new State("buildMode");
+
+        Set<State> states = new HashSet<>();
+        states.add(idle);
+        states.add(defenseMode);
+        states.add(buildMode);
+
+        EventHandler enemyEventHandler = event -> {
+            Log.d("ENEMY DETECTED");
+            if (enemyRobotLoc != null && canBuildUnitWithResources(robot.SPECS.CRUSADER)) {
+                int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
+                action = build(robot.SPECS.CRUSADER, goalDir[0], goalDir[1]);
+
+                if (action == null){
+                    Log.i("COULDN'T BUILD CRUSADER");
+                    // try to attack
+                    action = robot.attack(enemyRobotLoc[0] - robot.me.x, enemyRobotLoc[1] - robot.me.y);
+                } else {
+                    Log.i("BUILT CRUSADER");
+                    crusadersBuilt++;
+                }
+            }
+        };
+
+        EventHandler buildEventHandler = event -> {
+            Log.i("NO ENEMIES FOUND");
+
+            List<int[]> tileDir = RobotUtil.getAdjacentTilesWithDeposits(robot, getFullMap());
+            if (!tileDir.isEmpty() && (tileDir.size() > pilgrimsBuilt)) {
+                //Log.i("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
+
+                for (int[] direction : tileDir) {
+                    action = build(robot.SPECS.PILGRIM, direction[0], direction[1]);
+                    if (action != null) {
+                        pilgrimsBuilt++;
+                        break;
+                    }
+                }
+            } else if (numOfDeposits > pilgrimsBuilt && canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile() && robot.me.turn % 5 == 0) {
+                // number of times to retry building
+                Log.i("BUILDING NEW PILGRIM");
+                action = tryAction(20, () -> {
+                    int[] randDir = RobotUtil.getRandomDir();
+                    return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
+                });
+                if (action != null) {
+                    pilgrimsBuilt++;
+                }
+            }
+        };
+
+        Transition idleToDefenceMode = new TransitionBuilder()
+                .name("idleToDefenceMode")
+                .sourceState(idle)
+                .eventType(EnemyDetected.class)
+                .eventHandler(enemyEventHandler)
+                .targetState(defenseMode)
+                .build();
+
+        Transition idleToBuildMode = new TransitionBuilder()
+                .name("idleToBuildMode")
+                .sourceState(idle)
+                .eventType(EnemyMissing.class)
+                .eventHandler(buildEventHandler)
+                .targetState(buildMode)
+                .build();
+
+        Transition buildToDefenceMode = new TransitionBuilder()
+                .name("buildToDefenceMode")
+                .sourceState(buildMode)
+                .eventType(EnemyDetected.class)
+                .eventHandler(enemyEventHandler)
+                .targetState(defenseMode)
+                .build();
+
+        Transition enemyLocked = new TransitionBuilder()
+                .name("enemyLocked")
+                .sourceState(defenseMode)
+                .eventType(EnemyDetected.class)
+                .eventHandler(enemyEventHandler)
+                .targetState(defenseMode)
+                .build();
+
+        Transition defenceToBuildMode = new TransitionBuilder()
+                .name("defenceToBuildMode")
+                .sourceState(defenseMode)
+                .eventType(EnemyMissing.class)
+                .eventHandler(buildEventHandler)
+                .targetState(buildMode)
+                .build();
+
+        Transition continueBuilding = new TransitionBuilder()
+                .name("continueBuilding")
+                .sourceState(buildMode)
+                .eventType(EnemyMissing.class)
+                .eventHandler(buildEventHandler)
+                .targetState(buildMode)
+                .build();
+
+        castleStateMachine = new FiniteStateMachineBuilder(states, idle)
+                .registerTransition(idleToDefenceMode)
+                .registerTransition(buildToDefenceMode)
+                .registerTransition(idleToBuildMode)
+                .registerTransition(continueBuilding)
+                .registerTransition(enemyLocked)
+                .registerTransition(defenceToBuildMode)
+                .build();
     }
 
     @Override
     public void initTakeTurn() {
         super.initTakeTurn();
-        Log.i("PILGRIMS BUILT: " + pilgrimsBuilt);
-        Log.i("NUM OF DEPOSITS: " + numOfDeposits);
+        Log.i("PILGRIMS BUILT: ", pilgrimsBuilt);
+        Log.i("CRUSADERS BUILT: ", pilgrimsBuilt);
+        Log.i("NUM OF DEPOSITS: ", numOfDeposits);
+        enemyRobotLoc = null;
+        action = null;
     }
 
     @Override
     public Action takeTurn() {
-        Action action = null;
-
+        /*
         //prioritize building crusaders if there is an enemy within our vision radius
         Robot enemyRobot = null;
         for (Robot visibleRobot : robot.getVisibleRobots()) {
@@ -92,5 +211,41 @@ public class Castle extends RobotType {
         }
 
         return action;
+        */
+
+        // check if enemies have been spotted
+        for (Robot visibleRobot : robot.getVisibleRobots()) {
+            if (visibleRobot.team != robot.me.team) {
+                enemyRobotLoc = new int[2];
+                enemyRobotLoc[0] = visibleRobot.x;
+                enemyRobotLoc[1] = visibleRobot.y;
+            }
+        }
+
+        if (enemyRobotLoc != null) {
+            // spam crusaders
+            try {
+                Log.d("FIRING ENEMY DETECTED EVENT");
+                castleStateMachine.fire(new EnemyDetected());
+            } catch (FiniteStateMachineException e) {
+                Log.e(e);
+            }
+        } else {
+            try {
+                Log.d("FIRING ENEMY MISSING EVENT");
+                castleStateMachine.fire(new EnemyMissing());
+            } catch (FiniteStateMachineException e) {
+                Log.e(e);
+            }
+        }
+
+        return action;
+    }
+
+
+    class EnemyDetected extends Event {
+    }
+
+    class EnemyMissing extends Event {
     }
 }

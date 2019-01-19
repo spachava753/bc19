@@ -28,16 +28,31 @@ public class Church extends RobotType {
                 .name("enemyDetection")
                 .sourceState(idle)
                 .eventType(EnemyDetected.class)
-                .eventHandler(new EventHandler() {
-                    @Override
-                    public void handleEvent(Event event) throws Exception {
-                        if (enemyRobotLoc != null && robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
-                            int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
-                            action = build(Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
+                .eventHandler(event -> {
+                    Log.d("ENEMY DETECTED");
+                    if (enemyRobotLoc != null && robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
+                        int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
+                        action = build(robot.SPECS.CRUSADER, goalDir[0], goalDir[1]);
 
-                            if (action == null)
-                                Log.i("COULDN'T BUILD CRUSADER");
-                        }
+                        if (action == null)
+                            Log.i("COULDN'T BUILD CRUSADER");
+                    }
+                })
+                .targetState(defenseMode)
+                .build();
+
+        Transition enemyLocked = new TransitionBuilder()
+                .name("enemyLocked")
+                .sourceState(defenseMode)
+                .eventType(EnemyDetected.class)
+                .eventHandler(event -> {
+                    Log.d("ENEMY DETECTED");
+                    if (enemyRobotLoc != null && robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
+                        int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
+                        action = build(robot.SPECS.CRUSADER, goalDir[0], goalDir[1]);
+
+                        if (action == null)
+                            Log.i("COULDN'T BUILD CRUSADER");
                     }
                 })
                 .targetState(defenseMode)
@@ -47,18 +62,23 @@ public class Church extends RobotType {
                 .name("enemyLost")
                 .sourceState(defenseMode)
                 .eventType(EnemyMissing.class)
-                .eventHandler(new EventHandler() {
-                    @Override
-                    public void handleEvent(Event event) throws Exception {
-                        Log.i("NO ENEMIES FOUND");
-                    }
-                })
+                .eventHandler(event -> Log.i("NO ENEMIES FOUND"))
+                .targetState(idle)
+                .build();
+
+        Transition enemyNotFound = new TransitionBuilder()
+                .name("enemyNotFound")
+                .sourceState(idle)
+                .eventType(EnemyMissing.class)
+                .eventHandler(event -> Log.i("NO ENEMIES FOUND"))
                 .targetState(idle)
                 .build();
 
         chruchStateMachine = new FiniteStateMachineBuilder(states, idle)
                 .registerTransition(enemyDetection)
+                .registerTransition(enemyLocked)
                 .registerTransition(enemyLost)
+                .registerTransition(enemyNotFound)
                 .build();
     }
 
@@ -87,13 +107,13 @@ public class Church extends RobotType {
             try {
                 chruchStateMachine.fire(new EnemyDetected());
             } catch (FiniteStateMachineException e) {
-                e.printStackTrace();
+                Log.e(e);
             }
         } else {
             try {
                 chruchStateMachine.fire(new EnemyMissing());
             } catch (FiniteStateMachineException e) {
-                e.printStackTrace();
+                Log.e(e);
             }
         }
 

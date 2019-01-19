@@ -6,6 +6,9 @@ import java.util.List;
 
 public abstract class RobotType {
 
+    private int MIN_KARB_STOCKPILE = 0;
+    private int MIN_FUEL_STOCKPILE = 0;
+
     protected BCAbstractRobot robot;
 
     private boolean initialized = false;
@@ -36,6 +39,22 @@ public abstract class RobotType {
     }
 
     public abstract Action takeTurn();
+
+    public int getminKarbStockpile() {
+        return MIN_KARB_STOCKPILE;
+    }
+
+    public void setminKarbStockpile(int MIN_KARB_STOCKPILE) {
+        this.MIN_KARB_STOCKPILE = MIN_KARB_STOCKPILE;
+    }
+
+    public int getminFuelStockpile() {
+        return MIN_FUEL_STOCKPILE;
+    }
+
+    public void setminFuelStockpile(int MIN_FUEL_STOCKPILE) {
+        this.MIN_FUEL_STOCKPILE = MIN_FUEL_STOCKPILE;
+    }
 
     protected final int[] getDir(Node start, Node dest) {
         int[] newDir = {dest.x - start.x, dest.y - dest.y};
