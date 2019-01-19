@@ -62,7 +62,7 @@ public abstract class RobotType {
             for (int mapX = 0; mapX < fullMap.length; mapX++) {
                 // check if the node is occupied
                 Node node = new Node(mapX, mapY);
-                if (fullMap[mapY][mapX] == Util.KARBONITE || fullMap[mapY][mapX] == Util.FUEL) {
+                if (fullMap[mapY][mapX] == RobotUtil.KARBONITE || fullMap[mapY][mapX] == RobotUtil.FUEL) {
                     deposits.add(node);
                 }
             }
@@ -72,9 +72,9 @@ public abstract class RobotType {
     }
 
     public static List<Node> getAdjacentTilesWithDeposits(BCAbstractRobot robot, int[][] fullMap) {
-        //Log.i("inside Util.getAdjacentTilesWithDeposits()");
+        //Log.i("inside RobotUtil.getAdjacentTilesWithDeposits()");
         List<Node> depositTileDirections = new ArrayList<>();
-        for (int[] direction : Util.DIRECTIONS) {
+        for (int[] direction : RobotUtil.DIRECTIONS) {
             int checkX = robot.me.x + direction[0];
             int checkY = robot.me.y + direction[1];
             //Log.i("checkX is " + checkX);
@@ -86,8 +86,8 @@ public abstract class RobotType {
                 continue;
             }
             switch (fullMap[checkY][checkX]) {
-                case Util.FUEL:
-                case Util.KARBONITE:
+                case RobotUtil.FUEL:
+                case RobotUtil.KARBONITE:
                     //Log.i("found a karbonite deposit");
                     depositTileDirections.add(new Node(direction[0], direction[1]));
                     break;
@@ -129,13 +129,13 @@ public abstract class RobotType {
         for (int y = 0; y < robot.map.length; y++) {
             for (int x = 0; x < robot.map[0].length; x++) {
                 if (robot.karboniteMap[y][x])
-                    fullMap[y][x] = Util.KARBONITE;
+                    fullMap[y][x] = RobotUtil.KARBONITE;
                 else if (robot.fuelMap[y][x])
-                    fullMap[y][x] = Util.FUEL;
+                    fullMap[y][x] = RobotUtil.FUEL;
                 else if (robot.getPassableMap()[y][x])
-                    fullMap[y][x] = Util.TERRAIN;
+                    fullMap[y][x] = RobotUtil.TERRAIN;
                 else
-                    fullMap[y][x] = Util.NONE;
+                    fullMap[y][x] = RobotUtil.NONE;
             }
         }
 
@@ -229,7 +229,7 @@ public abstract class RobotType {
     }
 
     public boolean checkIfSpaceIsPassable(Node node) {
-        return checkIfOnMap(node) && getFullMap()[node.y][node.x] != Util.NONE;
+        return checkIfOnMap(node) && getFullMap()[node.y][node.x] != RobotUtil.NONE;
     }
 
     public boolean checkIfOnMap(Node node) {

@@ -47,23 +47,23 @@ public abstract class AStar<T> {
 
 
     private void expand(Path<T> path) {
-        //Util.log("INSIDE EXPAND()");
+        //RobotUtil.log("INSIDE EXPAND()");
         T p = path.getPoint();
-        //Util.log("path.getPoint(): " + p);
+        //RobotUtil.log("path.getPoint(): " + p);
         Double min = mindists.get(path.getPoint());
-        //Util.log("MIN IS: " + min);
+        //RobotUtil.log("MIN IS: " + min);
 
         if (min == null || min.doubleValue() > path.f.doubleValue()){
-            //Util.log("min is null or min.doubleValue() > path.f.doubleValue()");
+            //RobotUtil.log("min is null or min.doubleValue() > path.f.doubleValue()");
             mindists.put(path.getPoint(), path.f);
         }
         else
             return;
 
         List<T> successors = generateSuccessors(p);
-        //Util.log("GENERATED SUCCESSORS");
-        //Util.log("SUCCESSORS: " + successors);
-        //Util.log("SUCCESSORS size: " + successors.size());
+        //RobotUtil.log("GENERATED SUCCESSORS");
+        //RobotUtil.log("SUCCESSORS: " + successors);
+        //RobotUtil.log("SUCCESSORS size: " + successors.size());
 
         for (T t : successors) {
             Path newPath = new Path(path);
@@ -83,30 +83,30 @@ public abstract class AStar<T> {
 
     public List<T> compute(T start) {
         try {
-            //Util.log("setting root path");
+            //RobotUtil.log("setting root path");
             Path root = new Path();
             root.setPoint(start);
 
-            //Util.log("calculating f function");
+            //RobotUtil.log("calculating f function");
             f(root, start, start);
 
-            //Util.log("expanding root path");
+            //RobotUtil.log("expanding root path");
             expand(root);
 
-            //Util.log("going into for loop");
+            //RobotUtil.log("going into for loop");
             for (; ; ) {
-                //Util.log("POLLING PATHS");
+                //RobotUtil.log("POLLING PATHS");
                 Path<T> p = paths.poll();
-                //Util.log("PATH is: " + p);
+                //RobotUtil.log("PATH is: " + p);
 
                 if (p == null) {
                     lastCost = Double.MAX_VALUE;
-                    Util.log("p IS NULL");
+                    RobotUtil.log("p IS NULL");
                     return null;
                 }
 
                 T last = p.getPoint();
-                //Util.log("LAST is: " + last);
+                //RobotUtil.log("LAST is: " + last);
 
                 lastCost = p.g;
 
@@ -124,7 +124,7 @@ public abstract class AStar<T> {
                 expand(p);
             }
         } catch (Exception e) {
-            Util.log(e.toString());
+            RobotUtil.log(e.toString());
         }
         return null;
 

@@ -28,7 +28,7 @@ public class Crusader extends RobotType {
 
         if (enemyRobot != null) {
             // see if we can attack him
-            double distToEnemy = Util.findDistance(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
+            double distToEnemy = RobotUtil.findDistance(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
             Log.i("DISTANCE TO ENEMY IS " + distToEnemy);
             if (distToEnemy >= Math.sqrt(robot.SPECS.UNITS[robot.SPECS.CRUSADER].ATTACK_RADIUS[1])) {
                 // move toward the enemy
@@ -62,7 +62,7 @@ public class Crusader extends RobotType {
             Log.i("MOVING RANDOMLY");
 
             action = tryAction(20, () -> {
-                int[] goalDir = Util.getRandomDir();
+                int[] goalDir = RobotUtil.getRandomDir();
                 return move(goalDir[0], goalDir[1]);
             });
         }

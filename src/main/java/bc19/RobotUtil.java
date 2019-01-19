@@ -3,7 +3,7 @@ package bc19;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Util {
+public final class RobotUtil {
     public static final int KARBONITE = 0;
     public static final int FUEL = 1;
     public static final int TERRAIN = 2;
@@ -35,7 +35,7 @@ public final class Util {
     }
 
     public static List<int[]> getAdjacentTilesWithDeposits(BCAbstractRobot robot, int[][] fullMap) {
-        //Log.i("inside Util.getAdjacentTilesWithDeposits()");
+        //Log.i("inside RobotUtil.getAdjacentTilesWithDeposits()");
         List<int[]> depositTileDirections = new ArrayList<>();
         for (int[] direction : DIRECTIONS) {
             int checkX = robot.me.x + direction[0];
@@ -117,7 +117,7 @@ public final class Util {
             for (int mapX = 0; mapX < fullMap.length; mapX++) {
                 // check if the node is occupied
                 Node node = new Node(mapX, mapY);
-                if (fullMap[mapY][mapX] == Util.KARBONITE || fullMap[mapY][mapX] == Util.FUEL) {
+                if (fullMap[mapY][mapX] == RobotUtil.KARBONITE || fullMap[mapY][mapX] == RobotUtil.FUEL) {
                     deposits.add(node);
                 }
             }

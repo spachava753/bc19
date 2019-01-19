@@ -29,7 +29,7 @@ public class Church extends RobotType {
         if (enemyRobotLoc != null) {
             // spam crusaders
             if (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
-                int[] goalDir = Util.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
+                int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
                 action = build(Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
 
                 if (action == null)

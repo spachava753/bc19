@@ -8,7 +8,7 @@ public class MyRobot extends BCAbstractRobot {
         Log.setRobot(this);
         Log.useTags(new String[]{"TSS"});
         Log.i("-------------------- BEGIN TURN -----------------------");
-        Util.setRobot(this);
+        RobotUtil.setRobot(this);
         int unit_type = me.unit;
         switch (unit_type) {
             case Constants.CASTLE_UNIT:

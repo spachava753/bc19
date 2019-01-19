@@ -55,14 +55,14 @@ public class Castle extends RobotType {
 
 
         // check if a deposit is in one of our adjacent squares
-        List<int[]> tileDir = Util.getAdjacentTilesWithDeposits(robot, getFullMap());
+        List<int[]> tileDir = RobotUtil.getAdjacentTilesWithDeposits(robot, getFullMap());
 
 
         // defensive measures
         if (enemyRobot != null) {
             //Log.i("FOUND AN ENEMY ROBOT");
             if (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
-                int[] goalDir = Util.getDir(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
+                int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobot.x, enemyRobot.y);
                 action = build(Constants.CRUSADER_UNIT, goalDir[0], goalDir[1]);
 
                 if (action == null) {
@@ -84,7 +84,7 @@ public class Castle extends RobotType {
                 // number of times to retry building
                 Log.i("BUILDING NEW PILGRIM");
                 action = tryAction(20, () -> {
-                    int[] randDir = Util.getRandomDir();
+                    int[] randDir = RobotUtil.getRandomDir();
                     return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
                 });
                 if (action != null) {
@@ -97,7 +97,7 @@ public class Castle extends RobotType {
                 action = null;
             } else if (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE) {
                 action = tryAction(20, () -> {
-                    int[] randDir = Util.getRandomDir();
+                    int[] randDir = RobotUtil.getRandomDir();
                     return build(robot.SPECS.CRUSADER, randDir[0], randDir[1]);
                 });
 

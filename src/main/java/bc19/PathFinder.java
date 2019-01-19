@@ -12,9 +12,9 @@ public class PathFinder extends AStar<Node> {
         this.map = map;
         this.goal = goal;
         this.robot = robot;
-        //Util.log("Received map: " + map);
-        //Util.log("Received goal: " + goal);
-        //Util.log("Received robot: " + robot);
+        //RobotUtil.log("Received map: " + map);
+        //RobotUtil.log("Received goal: " + goal);
+        //RobotUtil.log("Received robot: " + robot);
     }
 
     public Node getGoal() {
@@ -51,7 +51,7 @@ public class PathFinder extends AStar<Node> {
         //return new Double(Math.abs(map[0].length - 1 - to.x) + Math.abs(map.length - 1 - to.y));
 
         /* Use the Euclidean distance heuristic. (I think that is what it is called?) */
-        return new Double(Util.findDistance(from.x, from.y, to.x, to.y));
+        return new Double(RobotUtil.findDistance(from.x, from.y, to.x, to.y));
     }
 
     protected List<Node> generateSuccessors(Node node) {
