@@ -7,7 +7,6 @@ public class Castle extends RobotType {
     private int pilgrimsBuilt;
     private int crusadersBuilt;
     private int numOfDeposits;
-    private boolean buildNextPilgrim = true;
 
     public Castle(BCAbstractRobot robot) {
         super(robot);
@@ -16,33 +15,19 @@ public class Castle extends RobotType {
     @Override
     public void initialize() {
         super.initialize();
-        numOfDeposits = getDeposits(getFullMap()).size();
-        Log.i("NUM OF DEPOSITS: ", numOfDeposits);
+        numOfDeposits = getDeposits(getFullMap()).size()/2;
     }
 
     @Override
     public void initTakeTurn() {
         super.initTakeTurn();
         Log.i("PILGRIMS BUILT: " + pilgrimsBuilt);
+        Log.i("NUM OF DEPOSITS: " + numOfDeposits);
     }
 
     @Override
     public Action takeTurn() {
         Action action = null;
-
-
-        int numOfPilgrimsHealthyAndRefining = 0;
-        for (Robot visibleRobot : robot.getVisibleRobots()) {
-            if (visibleRobot.team == robot.me.team) {
-                if (visibleRobot.unit == Constants.PILGRIM_UNIT && visibleRobot.castle_talk == CastleTalkConstants.PILGRIM_REFINERY_AVAILABLE) {
-                    numOfPilgrimsHealthyAndRefining++;
-                }
-            }
-        }
-
-        if (numOfPilgrimsHealthyAndRefining > 0 && numOfPilgrimsHealthyAndRefining == pilgrimsBuilt) {
-            buildNextPilgrim = true;
-        }
 
         //prioritize building crusaders if there is an enemy within our vision radius
         Robot enemyRobot = null;
@@ -79,18 +64,15 @@ public class Castle extends RobotType {
                     break;
                 }
             }
-        } else if (numOfDeposits > pilgrimsBuilt) {
-            if (buildNextPilgrim) {
-                // number of times to retry building
-                Log.i("BUILDING NEW PILGRIM");
-                action = tryAction(20, () -> {
-                    int[] randDir = RobotUtil.getRandomDir();
-                    return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
-                });
-                if (action != null) {
-                    buildNextPilgrim = false;
-                    pilgrimsBuilt++;
-                }
+        } else if (numOfDeposits > pilgrimsBuilt && canBuildUnitWithResources(robot.SPECS.PILGRIM)) {
+            // number of times to retry building
+            Log.i("BUILDING NEW PILGRIM");
+            action = tryAction(20, () -> {
+                int[] randDir = RobotUtil.getRandomDir();
+                return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
+            });
+            if (action != null) {
+                pilgrimsBuilt++;
             }
         } else {
             if (crusadersBuilt > 20) {

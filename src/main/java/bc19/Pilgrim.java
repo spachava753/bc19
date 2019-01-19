@@ -30,7 +30,11 @@ public class Pilgrim extends RobotType {
     public void initTakeTurn() {
         super.initTakeTurn();
         if (refineryAvailable) {
+            Log.d("BROADCASTING THAT PILGRIM FOUND REFINERY");
             robot.castleTalk(CastleTalkConstants.PILGRIM_REFINERY_AVAILABLE);
+        } else {
+            Log.d("BROADCASTING THAT PILGRIM DID NOT FIND REFINERY AND IS HEALTHY");
+            robot.castleTalk(CastleTalkConstants.PILGRIM_HEALTHY);
         }
 
 
@@ -50,7 +54,11 @@ public class Pilgrim extends RobotType {
 
         }
 
-        Log.i("REFINERY POS: " + refinery[0] + ", " + refinery[1]);
+        if (refinery != null)
+            refineryAvailable = true;
+
+
+        //Log.i("REFINERY POS: " + refinery[0] + ", " + refinery[1]);
     }
 
     @Override
@@ -71,7 +79,7 @@ public class Pilgrim extends RobotType {
 
                 if (action != null) {
                     BuildAction buildAction = (BuildAction) action;
-                    Node buildingLoc = new Node(robot.me.x+buildAction.dx, robot.me.y+buildAction.dy);
+                    Node buildingLoc = new Node(robot.me.x + buildAction.dx, robot.me.y + buildAction.dy);
                     if(!deposits.contains(buildingLoc)){
                         Log.i("BUILDING A NEW CHURCH");
                         builtRefinery = true;

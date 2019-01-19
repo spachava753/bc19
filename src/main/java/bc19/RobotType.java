@@ -154,8 +154,8 @@ public abstract class RobotType {
     protected Action build(int unit, int dx, int dy) {
         Action result = null;
         // check if this unit can build or not
-        if (canBuild()) {
-            if (canBuildUnit(unit)) {
+        if (canThisUnitBuild()) {
+            if (canBuildUnit(unit) && canBuildUnitWithResources(unit)) {
                 int x = robot.me.x + dx;
                 int y = robot.me.y + dy;
                 // do some validations here
@@ -176,11 +176,15 @@ public abstract class RobotType {
         return result;
     }
 
-    private boolean canBuild() {
+    public boolean canBuildUnitWithResources(int unit) {
+        return robot.karbonite > robot.SPECS.UNITS[unit].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[unit].CONSTRUCTION_FUEL;
+    }
+
+    public boolean canThisUnitBuild() {
         return robot.me.unit == robot.SPECS.CASTLE || robot.me.unit == robot.SPECS.CHURCH || robot.me.unit == robot.SPECS.PILGRIM;
     }
 
-    private boolean canBuildUnit(int unit) {
+    public boolean canBuildUnit(int unit) {
         // if it is a pilgrim, it can build only churches
         if (robot.me.unit == robot.SPECS.PILGRIM && unit == robot.SPECS.CHURCH) {
             return true;
