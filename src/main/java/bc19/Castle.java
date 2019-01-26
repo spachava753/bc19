@@ -1,5 +1,6 @@
 package bc19;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +10,11 @@ public class Castle extends RobotType {
     private int pilgrimsBuilt;
     private int crusadersBuilt;
     private int numOfDeposits;
+
+    private List<Robot> pilgrimRobots;
+    private List<Robot> crusaderRobots;
+    private List<Robot> castleRobots;
+    private List<Robot> churchRobots;
 
     private FiniteStateMachine castleStateMachine;
     private int[] enemyRobotLoc = null;
@@ -138,11 +144,35 @@ public class Castle extends RobotType {
     @Override
     public void initTakeTurn() {
         super.initTakeTurn();
-        Log.i("PILGRIMS BUILT: ", pilgrimsBuilt);
-        Log.i("CRUSADERS BUILT: ", pilgrimsBuilt);
         Log.i("NUM OF DEPOSITS: ", numOfDeposits);
         enemyRobotLoc = null;
         action = null;
+
+
+        pilgrimRobots = new ArrayList<>(50);
+        crusaderRobots = new ArrayList<>(50);
+        castleRobots = new ArrayList<>(50);
+        churchRobots = new ArrayList<>(50);
+        for(int i = 0; i < 4096; i++){
+            Robot retrievedRobot = robot.getRobot(i);
+            if(retrievedRobot != null){
+                Log.d("Added robot", i, "to the list");
+                if(retrievedRobot.unit == robot.SPECS.PILGRIM){
+                    pilgrimRobots.add(retrievedRobot);
+                } else if(retrievedRobot.unit == robot.SPECS.CRUSADER){
+                    crusaderRobots.add(retrievedRobot);
+                } else if(retrievedRobot.unit == robot.SPECS.CASTLE){
+                    castleRobots.add(retrievedRobot);
+                } else if(retrievedRobot.unit == robot.SPECS.CHURCH){
+                    churchRobots.add(retrievedRobot);
+                }
+            }
+        }
+
+        Log.i("PILGRIMS BUILT:", pilgrimRobots.size());
+        Log.i("CRUSADERS BUILT:", crusaderRobots.size());
+        Log.d("CHURCHES BUILT:", churchRobots.size());
+        Log.d("NUM OF CASTLES:", castleRobots.size());
     }
 
     @Override

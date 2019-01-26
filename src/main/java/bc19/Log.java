@@ -76,10 +76,10 @@ public final class Log {
 			return;
 		}
 
-		String message = String.valueOf(msg);
+		String message = msg + " ";
 
 		for(Object arg: args) {
-			message += String.valueOf(arg) + " ";
+			message += arg + " ";
 		}
 
 		SYSTEM.print(level, mUseTags.toString(), message);
