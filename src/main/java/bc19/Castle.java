@@ -182,8 +182,8 @@ public class Castle extends RobotType {
 
         Log.i("PILGRIMS BUILT:", pilgrimRobots.size());
         Log.i("CRUSADERS BUILT:", crusaderRobots.size());
-        Log.d("CHURCHES BUILT:", churchRobots.size());
-        Log.d("NUM OF CASTLES:", castleRobots.size());
+        Log.i("CHURCHES BUILT:", churchRobots.size());
+        Log.i("NUM OF CASTLES:", castleRobots.size());
     }
 
     @Override

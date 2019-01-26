@@ -120,7 +120,19 @@ public abstract class AStar<T> {
                     // the first node we are getting is my position, so remove it
                     retPath.remove(0);
                     return retPath;
+                }// if the expandedCounter is too large, just return
+                else if(expandedCounter > 900){
+                    LinkedList<T> retPath = new LinkedList<T>();
+
+                    for (Path<T> i = p; i != null; i = i.parent) {
+                        retPath.addFirst(i.getPoint());
+                    }
+
+                    // the first node we are getting is my position, so remove it
+                    retPath.remove(0);
+                    return retPath;
                 }
+
                 expand(p);
             }
         } catch (Exception e) {

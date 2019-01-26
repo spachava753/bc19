@@ -12,6 +12,7 @@ public class MyRobot extends BCAbstractRobot {
         int unit_type = me.unit;
         switch (unit_type) {
             case Constants.CASTLE_UNIT:
+                Log.level(Log.I);
                 Log.i("INSIDE TURN " + me.turn);
                 Log.i("UNIT TYPE: Castle");
                 break;
