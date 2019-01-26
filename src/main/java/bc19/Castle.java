@@ -70,18 +70,20 @@ public class Castle extends RobotType {
 
             List<int[]> tileDir = RobotUtil.getAdjacentTilesWithDeposits(robot, getFullMap());
             Log.d("TILE_DIR SIZE", tileDir.size());
-            if (!tileDir.isEmpty() && (tileDir.size() > pilgrimRobots.size())) {
+            if (!tileDir.isEmpty()) {
                 Log.i("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
 
                 for (int[] direction : tileDir) {
                     action = build(robot.SPECS.PILGRIM, direction[0], direction[1]);
                     if(action != null){
-                        break;
+                        return;
                     }
                 }
 
+            }
 
-            } else if (numOfDeposits > pilgrimRobots.size() && canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile()
+
+            if (numOfDeposits > pilgrimRobots.size() && canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile()
                     && robot.fuel > getminFuelStockpile()) {
                 boolean buildNextPilgrim = true;
                 for(Robot pilgrim: pilgrimRobots){
