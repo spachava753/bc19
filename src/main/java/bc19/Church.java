@@ -24,20 +24,30 @@ public class Church extends RobotType {
         states.add(idle);
         states.add(defenseMode);
 
+        EventHandler handEnemy = event -> {
+            Log.d("ENEMY DETECTED");
+            if (enemyRobotLoc != null) {
+                if(canBuildUnitWithResources(robot.SPECS.CRUSADER)){
+                    int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
+                    action = build(robot.SPECS.CRUSADER, goalDir[0], goalDir[1]);
+
+                    if (action == null)
+                        Log.d("COULDN'T BUILD CRUSADER");
+                    else
+                        Log.d("BUILT CRUSADER");
+                } else {
+                    Log.d("NOT ENOUGH RESOURCES TO BUILD CRUSADER");
+                }
+            } else {
+                Log.d("ENEMYROBOTLOC IS NULL");
+            }
+        };
+
         Transition enemyDetection = new TransitionBuilder()
                 .name("enemyDetection")
                 .sourceState(idle)
                 .eventType(EnemyDetected.class)
-                .eventHandler(event -> {
-                    Log.d("ENEMY DETECTED");
-                    if (enemyRobotLoc != null && robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
-                        int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
-                        action = build(robot.SPECS.CRUSADER, goalDir[0], goalDir[1]);
-
-                        if (action == null)
-                            Log.i("COULDN'T BUILD CRUSADER");
-                    }
-                })
+                .eventHandler(handEnemy)
                 .targetState(defenseMode)
                 .build();
 
@@ -45,16 +55,7 @@ public class Church extends RobotType {
                 .name("enemyLocked")
                 .sourceState(defenseMode)
                 .eventType(EnemyDetected.class)
-                .eventHandler(event -> {
-                    Log.d("ENEMY DETECTED");
-                    if (enemyRobotLoc != null && robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CRUSADER].CONSTRUCTION_FUEL) {
-                        int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
-                        action = build(robot.SPECS.CRUSADER, goalDir[0], goalDir[1]);
-
-                        if (action == null)
-                            Log.i("COULDN'T BUILD CRUSADER");
-                    }
-                })
+                .eventHandler(handEnemy)
                 .targetState(defenseMode)
                 .build();
 
@@ -93,7 +94,7 @@ public class Church extends RobotType {
         Log.i("INSIDE CHURCH TURN METHOD");
 
         // check if enemies have been spotted
-        int[] enemyRobotLoc = null;
+        enemyRobotLoc = null;
         for (Robot visibleRobot : robot.getVisibleRobots()) {
             if (visibleRobot.team != robot.me.team) {
                 enemyRobotLoc = new int[2];
@@ -103,6 +104,8 @@ public class Church extends RobotType {
         }
 
         if (enemyRobotLoc != null) {
+            Log.d("ENEMY LOC IS NOT NULL");
+            Log.d("ENEMY LOC:", enemyRobotLoc);
             // spam crusaders
             try {
                 chruchStateMachine.fire(new EnemyDetected());

@@ -6,7 +6,7 @@ public class MyRobot extends BCAbstractRobot {
 
     public Action turn() {
         Log.setRobot(this);
-        Log.useTags(new String[]{"TSS"});
+        Log.useTags(new String[]{"TSS", String.valueOf(this.me.id)});
         Log.i("-------------------- BEGIN TURN -----------------------");
         RobotUtil.setRobot(this);
         int unit_type = me.unit;
