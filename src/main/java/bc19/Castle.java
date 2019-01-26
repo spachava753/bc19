@@ -43,17 +43,24 @@ public class Castle extends RobotType {
 
         EventHandler enemyEventHandler = event -> {
             Log.d("ENEMY DETECTED");
-            if (enemyRobotLoc != null && canBuildUnitWithResources(robot.SPECS.PROPHET)) {
-                int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
-                action = build(robot.SPECS.PROPHET, goalDir[0], goalDir[1]);
+            if (enemyRobotLoc != null) {
+                if(canBuildUnitWithResources(robot.SPECS.PROPHET)){
+                    int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
+                    action = build(robot.SPECS.PROPHET, goalDir[0], goalDir[1]);
 
-                if (action == null){
-                    Log.i("COULDN'T BUILD PROPHET");
-                    // try to attack
-                    action = robot.attack(enemyRobotLoc[0] - robot.me.x, enemyRobotLoc[1] - robot.me.y);
+                    if (action == null){
+                        Log.i("COULDN'T BUILD PROPHET");
+                        // try to attack
+                        action = robot.attack(enemyRobotLoc[0] - robot.me.x, enemyRobotLoc[1] - robot.me.y);
+                    } else {
+                        Log.i("BUILT PROPHET");
+                        crusadersBuilt++;
+                    }
                 } else {
-                    Log.i("BUILT PROPHET");
-                    crusadersBuilt++;
+                    Log.i("NOT ENOUGH RESOURCES TO BUILD PROPHETS, ATTACKING DIRECTLY");
+                    int dx = enemyRobotLoc[0] - robot.me.x;
+                    int dy = enemyRobotLoc[1] - robot.me.y;
+                    action = robot.attack(dx, dy);
                 }
             }
         };
