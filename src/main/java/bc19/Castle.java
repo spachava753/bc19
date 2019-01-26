@@ -13,6 +13,7 @@ public class Castle extends RobotType {
 
     private List<Robot> pilgrimRobots;
     private List<Robot> crusaderRobots;
+    private List<Robot> prophetRobots;
     private List<Robot> castleRobots;
     private List<Robot> churchRobots;
 
@@ -27,7 +28,8 @@ public class Castle extends RobotType {
     @Override
     public void initialize() {
         super.initialize();
-        //setminKarbStockpile(40);
+        setminKarbStockpile(50);
+        setminFuelStockpile(100);
         numOfDeposits = getDeposits(getFullMap()).size() / 2;
 
         State idle = new State("idle");
@@ -41,16 +43,16 @@ public class Castle extends RobotType {
 
         EventHandler enemyEventHandler = event -> {
             Log.d("ENEMY DETECTED");
-            if (enemyRobotLoc != null && canBuildUnitWithResources(robot.SPECS.CRUSADER)) {
+            if (enemyRobotLoc != null && canBuildUnitWithResources(robot.SPECS.PROPHET)) {
                 int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
-                action = build(robot.SPECS.CRUSADER, goalDir[0], goalDir[1]);
+                action = build(robot.SPECS.PROPHET, goalDir[0], goalDir[1]);
 
                 if (action == null){
-                    Log.i("COULDN'T BUILD CRUSADER");
+                    Log.i("COULDN'T BUILD PROPHET");
                     // try to attack
                     action = robot.attack(enemyRobotLoc[0] - robot.me.x, enemyRobotLoc[1] - robot.me.y);
                 } else {
-                    Log.i("BUILT CRUSADER");
+                    Log.i("BUILT PROPHET");
                     crusadersBuilt++;
                 }
             }
@@ -72,7 +74,8 @@ public class Castle extends RobotType {
                 }
 
 
-            } else if (numOfDeposits > pilgrimRobots.size() && canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile()) {
+            } else if (numOfDeposits > pilgrimRobots.size() && canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile()
+                    && robot.fuel > getminFuelStockpile()) {
                 boolean buildNextPilgrim = true;
                 for(Robot pilgrim: pilgrimRobots){
                     if(pilgrim.castle_talk != CastleTalkConstants.PILGRIM_REFINERY_AVAILABLE){
@@ -162,6 +165,7 @@ public class Castle extends RobotType {
         crusaderRobots = new ArrayList<>(50);
         castleRobots = new ArrayList<>(50);
         churchRobots = new ArrayList<>(50);
+        prophetRobots = new ArrayList<>(50);
         for(int i = 0; i < 4096; i++){
             if(i == robot.id)
                 continue;
@@ -172,6 +176,8 @@ public class Castle extends RobotType {
                     pilgrimRobots.add(retrievedRobot);
                 } else if(retrievedRobot.unit == robot.SPECS.CRUSADER){
                     crusaderRobots.add(retrievedRobot);
+                } else if(retrievedRobot.unit == robot.SPECS.PROPHET){
+                    prophetRobots.add(retrievedRobot);
                 } else if(retrievedRobot.unit == robot.SPECS.CASTLE){
                     castleRobots.add(retrievedRobot);
                 } else if(retrievedRobot.unit == robot.SPECS.CHURCH){
@@ -182,6 +188,7 @@ public class Castle extends RobotType {
 
         Log.i("PILGRIMS BUILT:", pilgrimRobots.size());
         Log.i("CRUSADERS BUILT:", crusaderRobots.size());
+        Log.i("PROPHETS BUILT:", prophetRobots.size());
         Log.i("CHURCHES BUILT:", churchRobots.size());
         Log.i("NUM OF CASTLES:", castleRobots.size());
     }

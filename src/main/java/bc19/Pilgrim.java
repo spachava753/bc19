@@ -24,6 +24,8 @@ public class Pilgrim extends RobotType {
         super.initialize();
         deposits = RobotUtil.getDeposits(getFullMap());
         occupiedNodes = new LinkedList();
+        setminKarbStockpile(50);
+        setminFuelStockpile(100);
     }
 
     @Override

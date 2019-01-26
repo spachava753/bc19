@@ -17,6 +17,9 @@ public class Church extends RobotType {
     public void initialize() {
         super.initialize();
 
+        setminKarbStockpile(50);
+        setminFuelStockpile(100);
+
         State idle = new State("idle");
         State defenseMode = new State("defenseMode");
 
@@ -29,14 +32,14 @@ public class Church extends RobotType {
             if (enemyRobotLoc != null) {
                 if(canBuildUnitWithResources(robot.SPECS.CRUSADER)){
                     int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
-                    action = build(robot.SPECS.CRUSADER, goalDir[0], goalDir[1]);
+                    action = build(robot.SPECS.PROPHET, goalDir[0], goalDir[1]);
 
                     if (action == null)
-                        Log.d("COULDN'T BUILD CRUSADER");
+                        Log.d("COULDN'T BUILD PROPHET");
                     else
-                        Log.d("BUILT CRUSADER");
+                        Log.d("BUILT PROPHET");
                 } else {
-                    Log.d("NOT ENOUGH RESOURCES TO BUILD CRUSADER");
+                    Log.d("NOT ENOUGH RESOURCES TO BUILD PROPHET");
                 }
             } else {
                 Log.d("ENEMYROBOTLOC IS NULL");

@@ -50,7 +50,8 @@ public class MyRobot extends BCAbstractRobot {
                     robotType = new Crusader(this);
                     break;
                 case Constants.PROPHET_UNIT:
-                    return runProphet();
+                    robotType = new Prophet(this);
+                    break;
                 case Constants.PREACHER_UNIT:
                     return runPreacher();
                 default:
