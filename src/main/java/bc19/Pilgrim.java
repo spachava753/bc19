@@ -73,14 +73,27 @@ public class Pilgrim extends RobotType {
             if (!builtRefinery && !refineryAvailable && (robot.karbonite > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_KARBONITE && robot.fuel > robot.SPECS.UNITS[robot.SPECS.CHURCH].CONSTRUCTION_FUEL)) {
                 // build a church somewhere
                 action = tryAction(20, () -> {
-                    int[] randDir = RobotUtil.getRandomDir();
-                    return build(Constants.CHURCH_UNIT, randDir[0], randDir[1]);
+                    BuildAction buildAction = null;
+                    while(buildAction == null){
+                        int[] randDir = RobotUtil.getRandomDir();
+                        buildAction = (BuildAction) build(Constants.CHURCH_UNIT, randDir[0], randDir[1]);
+                        Node buildingLoc = new Node(robot.me.x + buildAction.dx, robot.me.y + buildAction.dy);
+                        if(getFullMap()[buildingLoc.y][buildingLoc.x] != RobotUtil.FUEL && getFullMap()[buildingLoc.y][buildingLoc.x] != RobotUtil.KARBONITE){
+                            Log.i("BUILDING A NEW CHURCH");
+                            builtRefinery = true;
+                        } else {
+                            Log.i("BUILDING A NEW CHURCH ON A DEPOSIT. RESETTING ACTION...");
+                            buildAction = null;
+                        }
+                    }
+                    return buildAction;
                 });
 
+                /*
                 if (action != null) {
                     BuildAction buildAction = (BuildAction) action;
                     Node buildingLoc = new Node(robot.me.x + buildAction.dx, robot.me.y + buildAction.dy);
-                    if(!deposits.contains(buildingLoc)){
+                    if(getFullMap()[buildingLoc.y][buildingLoc.x] != RobotUtil.FUEL && getFullMap()[buildingLoc.y][buildingLoc.x] != RobotUtil.KARBONITE){
                         Log.i("BUILDING A NEW CHURCH");
                         builtRefinery = true;
                     } else {
@@ -88,6 +101,7 @@ public class Pilgrim extends RobotType {
                         action = null;
                     }
                 }
+                */
             }
 
             if (refinery != null && Math.floor(RobotUtil.findDistance(refinery[0], refinery[1], robot.me.x, robot.me.y)) == 1) {

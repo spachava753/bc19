@@ -27,7 +27,7 @@ public class Castle extends RobotType {
     @Override
     public void initialize() {
         super.initialize();
-        setminKarbStockpile(40);
+        //setminKarbStockpile(40);
         numOfDeposits = getDeposits(getFullMap()).size() / 2;
 
         State idle = new State("idle");
@@ -60,25 +60,34 @@ public class Castle extends RobotType {
             Log.i("NO ENEMIES FOUND");
 
             List<int[]> tileDir = RobotUtil.getAdjacentTilesWithDeposits(robot, getFullMap());
-            if (!tileDir.isEmpty() && (tileDir.size() > pilgrimsBuilt)) {
-                //Log.i("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
+            Log.d("TILE_DIR SIZE", tileDir.size());
+            if (!tileDir.isEmpty() && (tileDir.size() > pilgrimRobots.size())) {
+                Log.i("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
 
                 for (int[] direction : tileDir) {
                     action = build(robot.SPECS.PILGRIM, direction[0], direction[1]);
-                    if (action != null) {
-                        pilgrimsBuilt++;
+                    if(action != null){
                         break;
                     }
                 }
-            } else if (numOfDeposits > pilgrimsBuilt && canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile() && robot.me.turn % 5 == 0) {
-                // number of times to retry building
-                Log.i("BUILDING NEW PILGRIM");
-                action = tryAction(20, () -> {
-                    int[] randDir = RobotUtil.getRandomDir();
-                    return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
-                });
-                if (action != null) {
-                    pilgrimsBuilt++;
+
+
+            } else if (numOfDeposits > pilgrimRobots.size() && canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile()) {
+                boolean buildNextPilgrim = true;
+                for(Robot pilgrim: pilgrimRobots){
+                    if(pilgrim.castle_talk != CastleTalkConstants.PILGRIM_REFINERY_AVAILABLE){
+                        buildNextPilgrim = false;
+                        break;
+                    }
+                }
+
+                if(buildNextPilgrim){
+                    // number of times to retry building
+                    Log.i("BUILDING NEW PILGRIM");
+                    action = tryAction(20, () -> {
+                        int[] randDir = RobotUtil.getRandomDir();
+                        return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
+                    });
                 }
             }
         };
@@ -154,6 +163,8 @@ public class Castle extends RobotType {
         castleRobots = new ArrayList<>(50);
         churchRobots = new ArrayList<>(50);
         for(int i = 0; i < 4096; i++){
+            if(i == robot.id)
+                continue;
             Robot retrievedRobot = robot.getRobot(i);
             if(retrievedRobot != null){
                 Log.d("Added robot", i, "to the list");

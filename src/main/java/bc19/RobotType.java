@@ -209,13 +209,13 @@ public abstract class RobotType {
             return true;
         }
 
-        // if it is a church, it can build anything but castles
-        if (robot.me.unit == robot.SPECS.CHURCH && unit != robot.SPECS.CASTLE) {
+        // if it is a church, it can build anything but castles and churches
+        if (robot.me.unit == robot.SPECS.CHURCH && unit != robot.SPECS.CASTLE && unit != robot.SPECS.CHURCH) {
             return true;
         }
 
-        // if it is a castles, it can build anything but churches
-        if (robot.me.unit == robot.SPECS.CASTLE && unit != robot.SPECS.CHURCH) {
+        // if it is a castles, it can build anything but castles and churches
+        if (robot.me.unit == robot.SPECS.CASTLE && unit != robot.SPECS.CASTLE && unit != robot.SPECS.CHURCH) {
             return true;
         }
 
