@@ -11,6 +11,8 @@ public class Castle extends RobotType {
     private int crusadersBuilt;
     private int numOfDeposits;
 
+    private boolean builtChainPilgrim = false;
+
     private List<Robot> pilgrimRobots;
     private List<Robot> crusaderRobots;
     private List<Robot> prophetRobots;
@@ -82,7 +84,23 @@ public class Castle extends RobotType {
 
             }
 
+            if(!builtChainPilgrim){
+                if (canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile()
+                        && robot.fuel > getminFuelStockpile()) {
 
+                    Log.i("BUILDING NEW PILGRIM");
+                    action = tryAction(20, () -> {
+                        int[] randDir = RobotUtil.getRandomDir();
+                        return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
+                    });
+
+                    if(action != null){
+                        builtChainPilgrim = true;
+                    }
+                }
+            }
+
+            /*
             if (numOfDeposits > pilgrimRobots.size() && canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile()
                     && robot.fuel > getminFuelStockpile()) {
                 boolean buildNextPilgrim = true;
@@ -102,6 +120,7 @@ public class Castle extends RobotType {
                     });
                 }
             }
+            */
         };
 
         Transition idleToDefenceMode = new TransitionBuilder()

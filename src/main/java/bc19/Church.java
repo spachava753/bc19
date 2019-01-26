@@ -1,6 +1,7 @@
 package bc19;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Church extends RobotType {
@@ -8,6 +9,8 @@ public class Church extends RobotType {
     private FiniteStateMachine chruchStateMachine;
     private int[] enemyRobotLoc = null;
     private Action action;
+
+    private boolean builtChainPilgrim;
 
     public Church(BCAbstractRobot robot) {
         super(robot);
@@ -27,10 +30,10 @@ public class Church extends RobotType {
         states.add(idle);
         states.add(defenseMode);
 
-        EventHandler handEnemy = event -> {
+        EventHandler handleEnemy = event -> {
             Log.d("ENEMY DETECTED");
             if (enemyRobotLoc != null) {
-                if(canBuildUnitWithResources(robot.SPECS.CRUSADER)){
+                if (canBuildUnitWithResources(robot.SPECS.CRUSADER)) {
                     int[] goalDir = RobotUtil.getDir(robot.me.x, robot.me.y, enemyRobotLoc[0], enemyRobotLoc[1]);
                     action = build(robot.SPECS.PROPHET, goalDir[0], goalDir[1]);
 
@@ -46,11 +49,45 @@ public class Church extends RobotType {
             }
         };
 
+        EventHandler buildEventHandler = event -> {
+            Log.i("NO ENEMIES FOUND");
+
+            List<int[]> tileDir = RobotUtil.getAdjacentTilesWithDeposits(robot, getFullMap());
+            Log.d("TILE_DIR SIZE", tileDir.size());
+            if (!tileDir.isEmpty()) {
+                Log.i("ONE OF THE ADJACENT TILES HAS A DEPOSIT");
+
+                for (int[] direction : tileDir) {
+                    action = build(robot.SPECS.PILGRIM, direction[0], direction[1]);
+                    if(action != null){
+                        return;
+                    }
+                }
+
+            }
+
+            if(!builtChainPilgrim){
+                if (canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile()
+                        && robot.fuel > getminFuelStockpile()) {
+
+                    Log.i("BUILDING NEW PILGRIM");
+                    action = tryAction(20, () -> {
+                        int[] randDir = RobotUtil.getRandomDir();
+                        return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
+                    });
+
+                    if(action != null){
+                        builtChainPilgrim = true;
+                    }
+                }
+            }
+        };
+
         Transition enemyDetection = new TransitionBuilder()
                 .name("enemyDetection")
                 .sourceState(idle)
                 .eventType(EnemyDetected.class)
-                .eventHandler(handEnemy)
+                .eventHandler(handleEnemy)
                 .targetState(defenseMode)
                 .build();
 
@@ -58,7 +95,7 @@ public class Church extends RobotType {
                 .name("enemyLocked")
                 .sourceState(defenseMode)
                 .eventType(EnemyDetected.class)
-                .eventHandler(handEnemy)
+                .eventHandler(handleEnemy)
                 .targetState(defenseMode)
                 .build();
 
@@ -66,7 +103,7 @@ public class Church extends RobotType {
                 .name("enemyLost")
                 .sourceState(defenseMode)
                 .eventType(EnemyMissing.class)
-                .eventHandler(event -> Log.i("NO ENEMIES FOUND"))
+                .eventHandler(buildEventHandler)
                 .targetState(idle)
                 .build();
 
@@ -74,7 +111,7 @@ public class Church extends RobotType {
                 .name("enemyNotFound")
                 .sourceState(idle)
                 .eventType(EnemyMissing.class)
-                .eventHandler(event -> Log.i("NO ENEMIES FOUND"))
+                .eventHandler(buildEventHandler)
                 .targetState(idle)
                 .build();
 
