@@ -79,6 +79,31 @@ public class Church extends RobotType {
                     if(action != null){
                         builtChainPilgrim = true;
                     }
+
+                    return;
+                }
+            }
+
+            if(robot.karbonite > getminKarbStockpile() && robot.fuel > getminFuelStockpile()){
+                // occasionally spawn a few crusaders and prophets with some pilgrims just in case some die in battle
+                if (robot.me.turn % 90 == 0 && canBuildUnitWithResources(robot.SPECS.PROPHET)){
+                    Log.i("BUILDING NEW PROPHET");
+                    action = tryAction(20, () -> {
+                        int[] randDir = RobotUtil.getRandomDir();
+                        return build(robot.SPECS.PROPHET, randDir[0], randDir[1]);
+                    });
+                } else if(robot.me.turn % 80 == 0 && canBuildUnitWithResources(robot.SPECS.CRUSADER)){
+                    Log.i("BUILDING NEW CRUSADER");
+                    action = tryAction(20, () -> {
+                        int[] randDir = RobotUtil.getRandomDir();
+                        return build(robot.SPECS.CRUSADER, randDir[0], randDir[1]);
+                    });
+                } else if(robot.me.turn % 100 == 0 && canBuildUnitWithResources(robot.SPECS.PILGRIM)){
+                    Log.i("BUILDING NEW PILGRIM");
+                    action = tryAction(20, () -> {
+                        int[] randDir = RobotUtil.getRandomDir();
+                        return build(robot.SPECS.PILGRIM, randDir[0], randDir[1]);
+                    });
                 }
             }
         };

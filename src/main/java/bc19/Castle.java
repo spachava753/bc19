@@ -97,22 +97,26 @@ public class Castle extends RobotType {
                     if(action != null){
                         builtChainPilgrim = true;
                     }
+
+                    return;
                 }
             }
 
-            /*
-            if (numOfDeposits > pilgrimRobots.size() && canBuildUnitWithResources(robot.SPECS.PILGRIM) && robot.karbonite > getminKarbStockpile()
-                    && robot.fuel > getminFuelStockpile()) {
-                boolean buildNextPilgrim = true;
-                for(Robot pilgrim: pilgrimRobots){
-                    if(pilgrim.castle_talk != CastleTalkConstants.PILGRIM_REFINERY_AVAILABLE){
-                        buildNextPilgrim = false;
-                        break;
-                    }
-                }
-
-                if(buildNextPilgrim){
-                    // number of times to retry building
+            if(robot.karbonite > getminKarbStockpile() && robot.fuel > getminFuelStockpile()){
+                // occasionally spawn a few crusaders and prophets with some pilgrims just in case some die in battle
+                if (robot.me.turn % 90 == 0 && canBuildUnitWithResources(robot.SPECS.PROPHET)){
+                    Log.i("BUILDING NEW PROPHET");
+                    action = tryAction(20, () -> {
+                        int[] randDir = RobotUtil.getRandomDir();
+                        return build(robot.SPECS.PROPHET, randDir[0], randDir[1]);
+                    });
+                } else if(robot.me.turn % 80 == 0 && canBuildUnitWithResources(robot.SPECS.CRUSADER)){
+                    Log.i("BUILDING NEW CRUSADER");
+                    action = tryAction(20, () -> {
+                        int[] randDir = RobotUtil.getRandomDir();
+                        return build(robot.SPECS.CRUSADER, randDir[0], randDir[1]);
+                    });
+                } else if(robot.me.turn % 100 == 0 && canBuildUnitWithResources(robot.SPECS.PILGRIM)){
                     Log.i("BUILDING NEW PILGRIM");
                     action = tryAction(20, () -> {
                         int[] randDir = RobotUtil.getRandomDir();
@@ -120,7 +124,6 @@ public class Castle extends RobotType {
                     });
                 }
             }
-            */
         };
 
         Transition idleToDefenceMode = new TransitionBuilder()
